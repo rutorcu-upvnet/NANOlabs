@@ -10,61 +10,61 @@
     <link>https://quartz.jzhao.xyz/plugins/CNAME</link>
     <guid>https://quartz.jzhao.xyz/plugins/CNAME</guid>
     <description>This plugin emits a CNAME record that points your subdomain to the default domain of your site. If you want to use a custom domain name like quartz.example.com for the site, then this is needed.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>ComponentResources</title>
     <link>https://quartz.jzhao.xyz/plugins/ComponentResources</link>
     <guid>https://quartz.jzhao.xyz/plugins/ComponentResources</guid>
     <description>This plugin manages and emits the static resources required for the Quartz framework. This includes CSS stylesheets and JavaScript scripts that enhance the functionality and aesthetics of the generated site.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>ContentIndex</title>
     <link>https://quartz.jzhao.xyz/plugins/ContentIndex</link>
     <guid>https://quartz.jzhao.xyz/plugins/ContentIndex</guid>
     <description>This plugin emits both RSS and an XML sitemap for your site. The RSS Feed allows users to subscribe to content on your site and the sitemap allows search engines to better index your site.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>ContentPage</title>
     <link>https://quartz.jzhao.xyz/plugins/ContentPage</link>
     <guid>https://quartz.jzhao.xyz/plugins/ContentPage</guid>
     <description>This plugin is a core component of the Quartz framework. It generates the HTML pages for each piece of Markdown content. It emits the full-page layout, including headers, footers, and body content, among others.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>CrawlLinks</title>
     <link>https://quartz.jzhao.xyz/plugins/CrawlLinks</link>
     <guid>https://quartz.jzhao.xyz/plugins/CrawlLinks</guid>
     <description>This plugin parses links and processes them to point to the right places. It is also needed for embedded links (like images). See Obsidian compatibility for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>CreatedModifiedDate</title>
     <link>https://quartz.jzhao.xyz/plugins/CreatedModifiedDate</link>
     <guid>https://quartz.jzhao.xyz/plugins/CreatedModifiedDate</guid>
     <description>This plugin determines the created, modified, and published dates for a document using three potential data sources: frontmatter metadata, Git history, and the filesystem ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>Description</title>
     <link>https://quartz.jzhao.xyz/plugins/Description</link>
     <guid>https://quartz.jzhao.xyz/plugins/Description</guid>
     <description>This plugin generates descriptions that are used as metadata for the HTML head, the RSS Feed and in folder and tag listings if there is no main body content, the description is used as ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>ExplicitPublish</title>
     <link>https://quartz.jzhao.xyz/plugins/ExplicitPublish</link>
     <guid>https://quartz.jzhao.xyz/plugins/ExplicitPublish</guid>
     <description>This plugin filters content based on an explicit publish flag in the frontmatter, allowing only content that is explicitly marked for publication to pass through ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>FolderPage</title>
     <link>https://quartz.jzhao.xyz/plugins/FolderPage</link>
     <guid>https://quartz.jzhao.xyz/plugins/FolderPage</guid>
     <description>This plugin generates index pages for folders, creating a listing page for each folder that contains multiple content files. See folder and tag listings for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item><item>
     <title>Frontmatter</title>
     <link>https://quartz.jzhao.xyz/plugins/Frontmatter</link>
     <guid>https://quartz.jzhao.xyz/plugins/Frontmatter</guid>
     <description>This plugin parses the frontmatter of the page using the gray-matter library. See Syntax, Obsidian compatibility and OxHugo compatibility for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:37 GMT</pubDate>
+    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
   </item>
     </channel>
   </rss>
