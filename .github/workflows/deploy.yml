@@ -31,9 +31,21 @@ jobs:
       - name: Build site
         run: npm run build
 
+      - name: Add base href for GitHub Pages and disable Jekyll
+        run: |
+          # Ensure .nojekyll so GitHub Pages won't process with Jekyll
+          touch docs/.nojekyll
+          # Insert a <base> tag in every HTML file if it's missing so absolute paths resolve under /NANOlabs/
+          REPO_PATH="/NANOlabs/"
+          find docs -name '*.html' -print0 | while IFS= read -r -d '' f; do
+            if ! grep -qi "<base " "$f"; then
+              perl -0777 -pe 's|<head>|<head>\n  <base href="'"${REPO_PATH}"'">|' -i "$f"
+            fi
+          done
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
-          # publish_branch: gh-pages  # opcional: por defecto publica en gh-pages
+          publish_branch: gh-pages
