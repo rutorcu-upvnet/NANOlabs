@@ -31,11 +31,20 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Add base href for GitHub Pages and disable Jekyll
+      - name: Debug: list build output
         run: |
-          # Ensure .nojekyll so GitHub Pages won't process with Jekyll
+          echo "Listing docs directory:"
+          ls -la docs || true
+          echo "Count files:"
+          find docs -type f | wc -l || true
+          echo "Show head of docs/index.html (if exists):"
+          if [ -f docs/index.html ]; then sed -n '1,60p' docs/index.html; else echo "docs/index.html missing"; fi
+
+      - name: Prepare publish
+        run: |
+          # disable Jekyll
           touch docs/.nojekyll
-          # Insert a <base> tag in every HTML file if it's missing so absolute paths resolve under /NANOlabs/
+          # insert base href if needed
           REPO_PATH="/NANOlabs/"
           find docs -name '*.html' -print0 | while IFS= read -r -d '' f; do
             if ! grep -qi "<base " "$f"; then
