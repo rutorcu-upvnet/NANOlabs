@@ -31,7 +31,7 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Debug: list build output
+      - name: Debug list build output
         run: |
           echo "Listing docs directory:"
           ls -la docs || true
