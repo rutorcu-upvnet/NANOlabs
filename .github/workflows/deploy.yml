@@ -27,34 +27,53 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        shell: bash
 
       - name: Build site
         run: npm run build
+        shell: bash
 
-      - name: Debug list build output
+      - name: "Debug: list build output (public)"
         run: |
-          echo "Listing docs directory:"
-          ls -la docs || true
-          echo "Count files:"
-          find docs -type f | wc -l || true
-          echo "Show head of docs/index.html (if exists):"
-          if [ -f docs/index.html ]; then sed -n '1,60p' docs/index.html; else echo "docs/index.html missing"; fi
+          echo "Listing public directory:"
+          if [ -d public ]; then
+            ls -la public
+          else
+            echo "public directory NOT found"
+          fi
 
-      - name: Prepare publish
+          echo "Count files:"
+          if [ -d public ]; then
+            find public -type f | wc -l
+          else
+            echo "0"
+          fi
+
+          echo "Show head of public/index.html (if exists):"
+          if [ -f public/index.html ]; then
+            sed -n '1,60p' public/index.html
+          else
+            echo "public/index.html missing"
+          fi
+        shell: bash
+
+      - name: Prepare publish (disable Jekyll + add base href)
         run: |
           # disable Jekyll
-          touch docs/.nojekyll
-          # insert base href if needed
+          touch public/.nojekyll
+
+          # insert base href if needed (adjust REPO_PATH if you host under different path)
           REPO_PATH="/NANOlabs/"
-          find docs -name '*.html' -print0 | while IFS= read -r -d '' f; do
+          find public -name '*.html' -print0 | while IFS= read -r -d '' f; do
             if ! grep -qi "<base " "$f"; then
               perl -0777 -pe 's|<head>|<head>\n  <base href="'"${REPO_PATH}"'">|' -i "$f"
             fi
           done
+        shell: bash
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          publish_dir: ./public
           publish_branch: gh-pages
