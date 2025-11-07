@@ -6,65 +6,59 @@
       <description>Last 10 notes on Microprocessors and Codesign</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>CNAME</title>
-    <link>https://quartz.jzhao.xyz/plugins/CNAME</link>
-    <guid>https://quartz.jzhao.xyz/plugins/CNAME</guid>
-    <description>This plugin emits a CNAME record that points your subdomain to the default domain of your site. If you want to use a custom domain name like quartz.example.com for the site, then this is needed.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Microprocessors and codesign labs</title>
+    <link>https://quartz.jzhao.xyz/</link>
+    <guid>https://quartz.jzhao.xyz/</guid>
+    <description>For questions mail pabance@upv.es This is the webpage contains the laboratory sessions of the NANO Microprocessors and Codesign itinerary. The following labs are online at the moment: RISC-V introduction RISC-V assembly programming Simple RISC-V monocycle processor Full RV32I monocycle processor Programming our processor HW/SW codesign Handling interrupts in the Ibex system HLS for loosely coupled accelerators Integrating accelerators into the Selene SoC .</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>ComponentResources</title>
-    <link>https://quartz.jzhao.xyz/plugins/ComponentResources</link>
-    <guid>https://quartz.jzhao.xyz/plugins/ComponentResources</guid>
-    <description>This plugin manages and emits the static resources required for the Quartz framework. This includes CSS stylesheets and JavaScript scripts that enhance the functionality and aesthetics of the generated site.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Little Endian Converter (32-bit)</title>
+    <link>https://quartz.jzhao.xyz/little-endian-converter</link>
+    <guid>https://quartz.jzhao.xyz/little-endian-converter</guid>
+    <description>Convert text files to little endian 32-bit format for RISC-V processor memory initialization.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>ContentIndex</title>
-    <link>https://quartz.jzhao.xyz/plugins/ContentIndex</link>
-    <guid>https://quartz.jzhao.xyz/plugins/ContentIndex</guid>
-    <description>This plugin emits both RSS and an XML sitemap for your site. The RSS Feed allows users to subscribe to content on your site and the sitemap allows search engines to better index your site.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Programming our processor</title>
+    <link>https://quartz.jzhao.xyz/Programming-our-processor</link>
+    <guid>https://quartz.jzhao.xyz/Programming-our-processor</guid>
+    <description>Preamble and setup Until now we have learned how to program in RV32I assembly RISC-V assembly programming and implemented a RV32I singlecycle processor Simple RISC-V monocycle ...</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>ContentPage</title>
-    <link>https://quartz.jzhao.xyz/plugins/ContentPage</link>
-    <guid>https://quartz.jzhao.xyz/plugins/ContentPage</guid>
-    <description>This plugin is a core component of the Quartz framework. It generates the HTML pages for each piece of Markdown content. It emits the full-page layout, including headers, footers, and body content, among others.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>RISC-V assembly programming</title>
+    <link>https://quartz.jzhao.xyz/RISC-V-assembly-programming</link>
+    <guid>https://quartz.jzhao.xyz/RISC-V-assembly-programming</guid>
+    <description>In this session you should be provided with a RISC-V programming reference card. In this reference card you will find the following useful information: RV32I instructions C compiler data sizes All RISC-V pseudoinstructions and their assembly translation The stack layout of method calling convention The RISC-V CSR registers (That we will not use in this practice) GNU assembler directives Some general GNU assembler directives are essential when writing code.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>CrawlLinks</title>
-    <link>https://quartz.jzhao.xyz/plugins/CrawlLinks</link>
-    <guid>https://quartz.jzhao.xyz/plugins/CrawlLinks</guid>
-    <description>This plugin parses links and processes them to point to the right places. It is also needed for embedded links (like images). See Obsidian compatibility for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Simple RISC-V monocycle processor</title>
+    <link>https://quartz.jzhao.xyz/Simple-RISC-V-monocycle-processor</link>
+    <guid>https://quartz.jzhao.xyz/Simple-RISC-V-monocycle-processor</guid>
+    <description>In this practice session we will implement the simple processor which we have seen in the corresponding theory session. Such processor is derived from the descriptions on the Patterson and Hennesy “Computer Organization and Design, RISC-V edition” Chapter 4.[1-4].</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>CreatedModifiedDate</title>
-    <link>https://quartz.jzhao.xyz/plugins/CreatedModifiedDate</link>
-    <guid>https://quartz.jzhao.xyz/plugins/CreatedModifiedDate</guid>
-    <description>This plugin determines the created, modified, and published dates for a document using three potential data sources: frontmatter metadata, Git history, and the filesystem ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>(Almost)Full RV32I monocycle processor</title>
+    <link>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</link>
+    <guid>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</guid>
+    <description>In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image: All RV32I opcodes and their meaning As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>Description</title>
-    <link>https://quartz.jzhao.xyz/plugins/Description</link>
-    <guid>https://quartz.jzhao.xyz/plugins/Description</guid>
-    <description>This plugin generates descriptions that are used as metadata for the HTML head, the RSS Feed and in folder and tag listings if there is no main body content, the description is used as ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>HLS for loosely coupled accelerators</title>
+    <link>https://quartz.jzhao.xyz/HLS-for-loosely-coupled-accelerators</link>
+    <guid>https://quartz.jzhao.xyz/HLS-for-loosely-coupled-accelerators</guid>
+    <description>In this lab session we will be exploring the creation of HLS accelerators in AMD Xilinx platforms. We will make a special focus on the memory interfaces of such accelerators, and the paradigm that AMD uses to communicate with them, focusing on how we can integrate them into a SoC.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>ExplicitPublish</title>
-    <link>https://quartz.jzhao.xyz/plugins/ExplicitPublish</link>
-    <guid>https://quartz.jzhao.xyz/plugins/ExplicitPublish</guid>
-    <description>This plugin filters content based on an explicit publish flag in the frontmatter, allowing only content that is explicitly marked for publication to pass through ...</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Handling interrupts in the Ibex system</title>
+    <link>https://quartz.jzhao.xyz/Handling-interrupts-in-the-Ibex-system</link>
+    <guid>https://quartz.jzhao.xyz/Handling-interrupts-in-the-Ibex-system</guid>
+    <description>Requirements In this session we will work with interrupts on the Ibex system. To download the Ibex system you can go to github.com/willmontaraces/ibex-demo-system However, as we will be extending our previous lab’s work, I recommend to create a copy of your existing ibex demo system with your existing software and hardware modifications.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item><item>
-    <title>FolderPage</title>
-    <link>https://quartz.jzhao.xyz/plugins/FolderPage</link>
-    <guid>https://quartz.jzhao.xyz/plugins/FolderPage</guid>
-    <description>This plugin generates index pages for folders, creating a listing page for each folder that contains multiple content files. See folder and tag listings for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
-  </item><item>
-    <title>Frontmatter</title>
-    <link>https://quartz.jzhao.xyz/plugins/Frontmatter</link>
-    <guid>https://quartz.jzhao.xyz/plugins/Frontmatter</guid>
-    <description>This plugin parses the frontmatter of the page using the gray-matter library. See Syntax, Obsidian compatibility and OxHugo compatibility for more information.</description>
-    <pubDate>Thu, 06 Nov 2025 17:33:53 GMT</pubDate>
+    <title>Integrating accelerators into the Selene SoC</title>
+    <link>https://quartz.jzhao.xyz/Integrating-accelerators-into-the-Selene-SoC</link>
+    <guid>https://quartz.jzhao.xyz/Integrating-accelerators-into-the-Selene-SoC</guid>
+    <description>In this lab session we will create an HLS accelerator in C++, then we will synthetize such accelerator and integrate into a commercial SoC. Finally we will write some software to interact with such an accelerator and compare the performance of this accelerator with that of the CPU running some code that performs an analogous function.</description>
+    <pubDate>Fri, 07 Nov 2025 08:57:18 GMT</pubDate>
   </item>
     </channel>
   </rss>

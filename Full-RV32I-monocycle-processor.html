@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <base href="/NANOlabs/"><title>(Almost)Full RV32I monocycle processor</title><meta charset="utf-8"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM Plex Mono&amp;family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;display=swap"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta property="og:title" content="(Almost)Full RV32I monocycle processor"/><meta property="og:description" content="In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image: All RV32I opcodes and their meaning As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor."/><meta property="og:image" content="https://quartz.jzhao.xyz/static/og-image.png"/><meta property="og:width" content="1200"/><meta property="og:height" content="675"/><link rel="icon" href="./static/icon.png"/><meta name="description" content="In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image: All RV32I opcodes and their meaning As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor."/><meta name="generator" content="Quartz"/><link href="./index.css" rel="stylesheet" type="text/css" spa-preserve/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" rel="stylesheet" type="text/css" spa-preserve/><script src="./prescript.js" type="application/javascript" spa-preserve></script><script type="application/javascript" spa-preserve>const fetchData = fetch("./static/contentIndex.json").then(data => data.json())</script></head><body data-slug="Full-RV32I-monocycle-processor"><div id="quartz-root" class="page"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href=".">Microprocessors and Codesign</a></h2><div class="spacer mobile-only"></div><div class="search"><button class="search-button" id="search-button"><p>Search</p><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg></button><div id="search-container"><div id="search-space"><input autocomplete="off" id="search-bar" name="search" type="text" aria-label="Search for something" placeholder="Search for something"/><div id="search-layout" data-preview="true"></div></div></div></div><button class="darkmode" id="darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button><div class="explorer desktop-only"><button type="button" id="explorer" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-tree="[]" aria-controls="explorer-content" aria-expanded="false"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-content"><ul class="overflow" id="explorer-ul"><li><div class="folder-outer open"><ul style="padding-left:0;" class="content" data-folderul><li><div class="folder-outer "><ul style="padding-left:0;" class="content" data-folderul></ul></div></li><li><a href="./Full-RV32I-monocycle-processor" data-for="Full-RV32I-monocycle-processor">(Almost)Full RV32I monocycle processor</a></li><li><a href="./Handling-interrupts-in-the-Ibex-system" data-for="Handling-interrupts-in-the-Ibex-system">Handling interrupts in the Ibex system</a></li><li><a href="./HLS-for-loosely-coupled-accelerators" data-for="HLS-for-loosely-coupled-accelerators">HLS for loosely coupled accelerators</a></li><li><a href="./Integrating-accelerators-into-the-Selene-SoC" data-for="Integrating-accelerators-into-the-Selene-SoC">Integrating accelerators into the Selene SoC</a></li><li><a href="./little-endian-converter" data-for="little-endian-converter">Little Endian Converter (32-bit)</a></li><li><a href="./Programming-our-processor" data-for="Programming-our-processor">Programming our processor</a></li><li><a href="./RISC-V-assembly-programming" data-for="RISC-V-assembly-programming">RISC-V assembly programming</a></li><li><a href="./Simple-RISC-V-monocycle-processor" data-for="Simple-RISC-V-monocycle-processor">Simple RISC-V monocycle processor</a></li></ul></div></li><li id="explorer-end"></li></ul></div></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="./">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>(Almost)Full RV32I monocycle processor</a></div></nav><h1 class="article-title">(Almost)Full RV32I monocycle processor</h1><p show-comma="true" class="content-meta"><span>Nov 07, 2025</span><span>5 min read</span></p></div></div><article class="popover-hint"><p>In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image:
+<img src="./Practica-3/images/Monocycle_PH_final_plain.svg" width="auto" height="auto" alt/></p>
+<h2 id="all-rv32i-opcodes-and-their-meaning">All RV32I opcodes and their meaning<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#all-rv32i-opcodes-and-their-meaning" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor. Below a list of the opcodes that the processor that we implement in this practice supports:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Opcode</th><th>Action</th><th>Format</th><th>Notes</th></tr></thead><tbody><tr><td>0110011</td><td></td><td>R-format</td><td><em>Funct3 and Funct7 codify action</em></td></tr><tr><td>0000011</td><td>Load</td><td>I-format</td><td><em>Funct3 codifies type of load</em></td></tr><tr><td>0010011</td><td>Arith</td><td>I-format</td><td><em>Arithmetic operations with immediates</em></td></tr><tr><td>1100111</td><td>JALR</td><td>I-format</td><td><em>PCabsolute, but immediates codify jump offset</em></td></tr><tr><td>0100011</td><td></td><td>S-format</td><td><em>Funct3 codifies the length</em></td></tr><tr><td>1100011</td><td></td><td>SB-format</td><td><em>Relative branches</em></td></tr><tr><td>0110111</td><td>LUI</td><td>U-format</td><td></td></tr><tr><td>0010111</td><td>AUIPC</td><td>U-format</td><td></td></tr><tr><td>1101111</td><td>JAL</td><td>UJ-format</td><td><em>20-bit immediate for offset</em></td></tr></tbody></table></div>
+<h2 id="new-vivado-project-with-changes">New Vivado project with changes<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#new-vivado-project-with-changes" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Download the new Vivado project from Poliformat. This vivado project contains the modified processor structure, with the new <code>Data memory</code> module and all the RISCV-core glue logic implemented. Take a look at BranchVal generation inside <code>riscv_core.sv</code>. In this file you should also notice the inclusion of the new multiplexors.</p>
+<p>However, this Vivado project has some modules that are left to implement by the student:</p>
+<ol>
+<li>Imm gen. This immediate generation module should have been fully implemented in the previous practice, copy your previous code into the new module and ensure all types of immediate instructions are properly decoded.</li>
+<li>ALUcontrol. As in the previous practice, the implementation of ALUcontrol is left to the student.</li>
+<li>Control. As in the previous practice, the implementation of Control is left to the student.</li>
+<li>ALU. As in the previous practice, the implementation of the ALU module is left to the student.</li>
+</ol>
+<h2 id="designing-a-new-control-module">Designing a new Control module<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#designing-a-new-control-module" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>In the previous practice, we developed a control module capable of supporting some (but not all) RV32I instructions. In this lab session we will support the totality of unprivileged instructions (Excluding System, Synch and Counter access instructions)</p>
+<p>To do so, we must modify our control unit to add this new functionality with three new signals: <code>branchJALR</code>,<code>LUI</code> and <code>PCALU</code>. We must assert <code>branchJALR</code> when a JAL or a JALR instruction is being executed. We must assert LUI when a LUI instruction is executed, and we must assert PCALU, when the input of the ALU is the PC.</p>
+<p>To account for the new supported instructions, we adapted the ALUOp behavior as described in the following table:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>ALUOp</th><th>Meaning</th></tr></thead><tbody><tr><td>00</td><td>Add</td></tr><tr><td>01</td><td>I-format</td></tr><tr><td>10</td><td>R-format</td></tr><tr><td>11</td><td>SB-format</td></tr></tbody></table></div>
+<p><strong>BEWARE</strong>, the <code>01</code> ALUOp encoding has changed from substract to I-format instructions. This is due to the need to differentiate I-format instructions and R-format instructions. As I-format instructions (generally) don’t encode the operation in the funct7 field.</p>
+<h1 id="exercises">Exercises<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercises" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="exercise-1-generate-the-control-signals-of-the-processor">Exercise 1. Generate the control signals of the processor<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-1-generate-the-control-signals-of-the-processor" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Fill the following table with the control signals of the processor. Optionally, create an excel/google_docs</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th style="text-align:center;"><strong>Instruction</strong></th><th style="text-align:center;"><strong>ALU<br/>Src</strong></th><th style="text-align:center;"><strong>Mem<br/>toReg</strong></th><th style="text-align:center;"><strong>Reg<br/>Write</strong></th><th style="text-align:center;"><strong>Mem<br/>Read</strong></th><th style="text-align:center;"><strong>Mem<br/>Write</strong></th><th style="text-align:center;"><strong>Branch</strong></th><th><strong>ALUOp</strong></th><th>Branch<br/>JALR</th><th>LUI</th><th>PC<br/>ALU</th></tr></thead><tbody><tr><td style="text-align:center;"><em>R-format</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>I-Load</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>I-Arith</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>I-JALR</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>S-format</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>SB-format</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>U-LUI</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>U-AUIPC</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr><tr><td style="text-align:center;"><em>JAL</em></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td style="text-align:center;"><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td><td><input type="text" maxlength="1" style="width:30px;"/></td></tr></tbody></table></div>
+<p>Upload a capture of this table called Exercise1.png into the poliformat task.</p>
+<h2 id="exercise-2-generate-the-alucontrol-output-signals">Exercise 2. Generate the ALUControl output signals<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-2-generate-the-alucontrol-output-signals" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Given the following table describing ALU op inputs:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>Operation</th><th>Op</th></tr></thead><tbody><tr><td>AND</td><td>0000</td></tr><tr><td>OR</td><td>0001</td></tr><tr><td>ADD</td><td>0010</td></tr><tr><td>Substract</td><td>0110</td></tr><tr><td>SetLessThan</td><td>0011</td></tr><tr><td>ShiftLeft</td><td>0100</td></tr><tr><td>LessThanUnsigned</td><td>0101</td></tr><tr><td>XOR</td><td>0111</td></tr><tr><td>ShiftRightLogical</td><td>1000</td></tr><tr><td>ShiftRightArithmetic</td><td>1001</td></tr></tbody></table></div>
+<p>Create a table that given the <code>ALUOp</code>, <code>Funct3</code> and <code>Funct7</code> inputs generates the ALUControlOutBits output. Fill the following table or optionally create a google_docs/excel table with the following fields:</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>ALUOp</th><th>Funct3</th><th>Funct7</th><th>AluControlOutOperation</th><th>AluControlOutBits</th></tr></thead><tbody><tr><td>00</td><td>???</td><td>???????</td><td>Add</td><td>0010</td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr><tr><td><input type="text" maxlength="2" style="width:60px;"/></td><td><input type="text" maxlength="3" style="width:40px;"/></td><td><input type="text" maxlength="7" style="width:100px;"/></td><td><input type="text" style="width:200px;"/></td><td><input type="text" maxlength="4" style="width:100px;"/></td></tr></tbody></table></div>
+<p>Upload a capture of this table called Exercise2.png into the poliformat task. Optionally upload your google_docs/excel table into the task with the name Exercise2.[extension]</p>
+<h2 id="exercise-3-control">Exercise 3. Control<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-3-control" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Using the exercise 1 table inputs and outputs, open the provided <code>Control.sv</code> module and fill the gaps.</p>
+<h2 id="exercise-4-alucontrol">Exercise 4. ALUControl<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-4-alucontrol" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Using the exercise 2 table inputs and outputs, open the provided <code>alu_control.sv</code> module and fill the gaps.</p>
+<h2 id="exercise-5-alu">Exercise 5. ALU<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-5-alu" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Open the new project ALU <code>ph_alu.sv</code> and provide support for the new operations using the Exercise2 ALU op table.</p>
+<p>Note that previous ALU input definition was <code>input [w-1:0] a,b;</code> while this ALU input definition is <code>input signed [w-1:0] a,b;</code> If a and b are not declared signed the shift right arithmetic operator will not function properly.</p>
+<h2 id="exercise-6-immediate-generation">Exercise 6. Immediate generation<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-6-immediate-generation" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Open the new project <code>imm.sv</code> immediate generator and paste your previous practice immediate generation code here. If your previous practice immediate generation code did not support all immediate instructions, please, provide support for them now.</p>
+<h2 id="testing-the-processor">Testing the processor<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#testing-the-processor" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>The Vivado project provided has a default testbench that compares your processor register values and pc to a known and functioning RISC-V processor each cycle. It provides a warning if these values do not match, stopping the simulation. When the simulation is stopped a message with the format <code>&quot;Rams are different at index 3: golden_ram[3] = 0x00000001, ram_mem[3] = 0xFFFFFFFF</code> is displayed in the TCL console. <strong>If the simulation reaches the <code>$stop</code> value at line 76 and the PC is not zero, then your processor passed our toy test!!</strong></p>
+<h2 id="optional-exercise-7-generating-a-bitfile-with-our-functioning-processor">Optional. Exercise 7. Generating a bitfile with our functioning processor.<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#optional-exercise-7-generating-a-bitfile-with-our-functioning-processor" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Analise the assembly code of <code>[project]\riscv_txt\Cafe_and_switch.txt</code>. As you can see this code is reading and writing to address <code>0xDEAD0000</code>. This address is memory mapped to the 7 segment display <em>when writing</em> and to the 16 board switches <em>when reading</em>. Replace the <code>from</code> and <code>fram</code> parameters from <code>tiny_riscv.sv</code> for your corresponding <code>Cafe_and_switch.txt</code> and <code>ram_7seg_bytes.txt</code>, generate a new bitstream, and flash it into the FPGA. Is the Cafe_and_switch.txt assembler code doing what you expected?</p>
+<h2 id="optional-exercise-8-modifying-cafe_and_switchtxt-to-process-switch-inputs-instantaneously">Optional. Exercise 8. Modifying Cafe_and_switch.txt to process switch inputs instantaneously<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#optional-exercise-8-modifying-cafe_and_switchtxt-to-process-switch-inputs-instantaneously" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>As you can see with Exercise 7, switch values take a while to update on the 7 segment displays. However, our processor is running at a lightning fast 10MHz. Modify the Cafe_and_switch assembler code to continuously update the right four 7segment displays with the FPGA switch values, but make it update the leftmost switches with memory contents once a second.
+For compiling your program ask for help to the professor.
+<strong>Generate a bitfile, flash it into the FPGA and realize that you programmed your own RV32I processor and wrote original functioning code running on it!!</strong></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div id="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false}"></div><button id="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div id="global-graph-outer"><div id="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true}"></div></div></div><div class="toc desktop-only"><button type="button" id="toc" class aria-controls="toc-content" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="toc-content" class><ul class="overflow"><li class="depth-1"><a href="#all-rv32i-opcodes-and-their-meaning" data-for="all-rv32i-opcodes-and-their-meaning">All RV32I opcodes and their meaning</a></li><li class="depth-1"><a href="#new-vivado-project-with-changes" data-for="new-vivado-project-with-changes">New Vivado project with changes</a></li><li class="depth-1"><a href="#designing-a-new-control-module" data-for="designing-a-new-control-module">Designing a new Control module</a></li><li class="depth-0"><a href="#exercises" data-for="exercises">Exercises</a></li><li class="depth-1"><a href="#exercise-1-generate-the-control-signals-of-the-processor" data-for="exercise-1-generate-the-control-signals-of-the-processor">Exercise 1. Generate the control signals of the processor</a></li><li class="depth-1"><a href="#exercise-2-generate-the-alucontrol-output-signals" data-for="exercise-2-generate-the-alucontrol-output-signals">Exercise 2. Generate the ALUControl output signals</a></li><li class="depth-1"><a href="#exercise-3-control" data-for="exercise-3-control">Exercise 3. Control</a></li><li class="depth-1"><a href="#exercise-4-alucontrol" data-for="exercise-4-alucontrol">Exercise 4. ALUControl</a></li><li class="depth-1"><a href="#exercise-5-alu" data-for="exercise-5-alu">Exercise 5. ALU</a></li><li class="depth-1"><a href="#exercise-6-immediate-generation" data-for="exercise-6-immediate-generation">Exercise 6. Immediate generation</a></li><li class="depth-1"><a href="#testing-the-processor" data-for="testing-the-processor">Testing the processor</a></li><li class="depth-1"><a href="#optional-exercise-7-generating-a-bitfile-with-our-functioning-processor" data-for="optional-exercise-7-generating-a-bitfile-with-our-functioning-processor">Optional. Exercise 7. Generating a bitfile with our functioning processor.</a></li><li class="depth-1"><a href="#optional-exercise-8-modifying-cafe_and_switchtxt-to-process-switch-inputs-instantaneously" data-for="optional-exercise-8-modifying-cafe_and_switchtxt-to-process-switch-inputs-instantaneously">Optional. Exercise 8. Modifying Cafe_and_switch.txt to process switch inputs instantaneously</a></li></ul></div></div><div class="backlinks"><h3>Backlinks</h3><ul class="overflow"><li><a href="./" class="internal">Microprocessors and codesign labs</a></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v4.4.0</a> © 2025</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script type="application/javascript">function c(){let t=this.parentElement;t.classList.toggle("is-collapsed");let l=t.classList.contains("is-collapsed")?this.scrollHeight:t.scrollHeight;t.style.maxHeight=l+"px";let o=t,e=t.parentElement;for(;e;){if(!e.classList.contains("callout"))return;let n=e.classList.contains("is-collapsed")?e.scrollHeight:e.scrollHeight+o.scrollHeight;e.style.maxHeight=n+"px",o=e,e=e.parentElement}}function i(){let t=document.getElementsByClassName("callout is-collapsible");for(let s of t){let l=s.firstElementChild;if(l){l.addEventListener("click",c),window.addCleanup(()=>l.removeEventListener("click",c));let e=s.classList.contains("is-collapsed")?l.scrollHeight:s.scrollHeight;s.style.maxHeight=e+"px"}}}document.addEventListener("nav",i);window.addEventListener("resize",i);
+</script><script type="module">
+          let mermaidImport = undefined
+          document.addEventListener('nav', async () => {
+            if (document.querySelector("code.mermaid")) {
+              mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
+              const mermaid = mermaidImport.default
+              const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
+              mermaid.initialize({
+                startOnLoad: false,
+                securityLevel: 'loose',
+                theme: darkMode ? 'dark' : 'default'
+              })
+
+              await mermaid.run({
+                querySelector: '.mermaid'
+              })
+            }
+          });
+          </script><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/copy-tex.min.js" type="application/javascript"></script><script src="./postscript.js" type="module"></script></html>

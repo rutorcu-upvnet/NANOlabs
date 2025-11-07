@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <base href="/NANOlabs/"><title>RISC-V assembly programming</title><meta charset="utf-8"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM Plex Mono&amp;family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;display=swap"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta property="og:title" content="RISC-V assembly programming"/><meta property="og:description" content="In this session you should be provided with a RISC-V programming reference card. In this reference card you will find the following useful information: RV32I instructions C compiler data sizes All RISC-V pseudoinstructions and their assembly translation The stack layout of method calling convention The RISC-V CSR registers (That we will not use in this practice) GNU assembler directives Some general GNU assembler directives are essential when writing code."/><meta property="og:image" content="https://quartz.jzhao.xyz/static/og-image.png"/><meta property="og:width" content="1200"/><meta property="og:height" content="675"/><link rel="icon" href="./static/icon.png"/><meta name="description" content="In this session you should be provided with a RISC-V programming reference card. In this reference card you will find the following useful information: RV32I instructions C compiler data sizes All RISC-V pseudoinstructions and their assembly translation The stack layout of method calling convention The RISC-V CSR registers (That we will not use in this practice) GNU assembler directives Some general GNU assembler directives are essential when writing code."/><meta name="generator" content="Quartz"/><link href="./index.css" rel="stylesheet" type="text/css" spa-preserve/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" rel="stylesheet" type="text/css" spa-preserve/><script src="./prescript.js" type="application/javascript" spa-preserve></script><script type="application/javascript" spa-preserve>const fetchData = fetch("./static/contentIndex.json").then(data => data.json())</script></head><body data-slug="RISC-V-assembly-programming"><div id="quartz-root" class="page"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href=".">Microprocessors and Codesign</a></h2><div class="spacer mobile-only"></div><div class="search"><button class="search-button" id="search-button"><p>Search</p><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg></button><div id="search-container"><div id="search-space"><input autocomplete="off" id="search-bar" name="search" type="text" aria-label="Search for something" placeholder="Search for something"/><div id="search-layout" data-preview="true"></div></div></div></div><button class="darkmode" id="darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="Dark mode"><title>Dark mode</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="Light mode"><title>Light mode</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button><div class="explorer desktop-only"><button type="button" id="explorer" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-tree="[]" aria-controls="explorer-content" aria-expanded="false"><h2>Explorer</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-content"><ul class="overflow" id="explorer-ul"><li><div class="folder-outer open"><ul style="padding-left:0;" class="content" data-folderul><li><div class="folder-outer "><ul style="padding-left:0;" class="content" data-folderul></ul></div></li><li><a href="./Full-RV32I-monocycle-processor" data-for="Full-RV32I-monocycle-processor">(Almost)Full RV32I monocycle processor</a></li><li><a href="./Handling-interrupts-in-the-Ibex-system" data-for="Handling-interrupts-in-the-Ibex-system">Handling interrupts in the Ibex system</a></li><li><a href="./HLS-for-loosely-coupled-accelerators" data-for="HLS-for-loosely-coupled-accelerators">HLS for loosely coupled accelerators</a></li><li><a href="./Integrating-accelerators-into-the-Selene-SoC" data-for="Integrating-accelerators-into-the-Selene-SoC">Integrating accelerators into the Selene SoC</a></li><li><a href="./little-endian-converter" data-for="little-endian-converter">Little Endian Converter (32-bit)</a></li><li><a href="./Programming-our-processor" data-for="Programming-our-processor">Programming our processor</a></li><li><a href="./RISC-V-assembly-programming" data-for="RISC-V-assembly-programming">RISC-V assembly programming</a></li><li><a href="./Simple-RISC-V-monocycle-processor" data-for="Simple-RISC-V-monocycle-processor">Simple RISC-V monocycle processor</a></li></ul></div></li><li id="explorer-end"></li></ul></div></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="./">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>RISC-V assembly programming</a></div></nav><h1 class="article-title">RISC-V assembly programming</h1><p show-comma="true" class="content-meta"><span>Nov 07, 2025</span><span>12 min read</span></p></div></div><article class="popover-hint"><p>In this session you should be provided with a <a href="https://cass-kul.github.io/files/riscv-card.pdf" class="external">RISC-V programming reference card<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>.
+In this reference card you will find the following useful information:</p>
+<ol>
+<li>RV32I instructions</li>
+<li>C compiler data sizes</li>
+<li>All RISC-V pseudoinstructions and their assembly translation</li>
+<li>The stack layout of method calling convention</li>
+<li>The RISC-V CSR registers (That we will not use in this practice)</li>
+</ol>
+<h1 id="gnu-assembler-directives"><a href="https://sourceware.org/binutils/docs/as/" class="external">GNU assembler directives<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#gnu-assembler-directives" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>Some general GNU assembler directives are essential when writing code.</p>
+<ul>
+<li>We use the <code>.text</code> and <code>.data</code> assembler macros to divide our code (in the text section) and program data (in the data section).</li>
+<li>We use the <code>.globl</code> assembler directive to define that a procedure label should be available for linking with other parts of the code. This is specially useful for linking assembly procedures with other files.</li>
+<li>We use the <code>.word</code>,<code>.ascii</code> and <code>.asciz</code> to declare variables with numbers or strings in our <code>.data</code> section. Words are used for defining integers, while <code>.ascii</code> and <code>.asciz</code> are used for defining strings. The difference between <code>.ascii</code> and <code>.asciz</code> is that <code>.asciz</code> appends a trailing zero to all strings, while <code>.ascii</code> does not. As such, a two letter string would take 2 bytes in ascii and three bytes in asciiz.</li>
+<li>We use the <code>.equ</code> to define assembler macros. Where <code>.equ SERIAL_PORT BASE 0xffffc000</code> would define a text substitution of the string <code>SERIAL_PORT_BASE</code> with the string <code>0xffffc000</code> in our code</li>
+<li>We use the <code>.org</code> directive to change the program address of the following data. This directive can be used in <code>.text</code> and <code>.data</code> regions. When used in text regions it defines the starting address where the program code will be stored. When used in data regions it defines the starting address where the data is stored.</li>
+</ul>
+<h1 id="the-qtrvsim-simulator">The <a href="https://comparch.edu.cvut.cz/qtrvsim/app/" class="external">QTRVSIM<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> simulator<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-qtrvsim-simulator" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>In this practice we will use the QtRvSim RISC-V architecture simulator. This simulator will be used in multiple practices, thus, I advice you to take your time and familiarize yourself with it.</p>
+<p>When you open the QTSim simulator the following window will appear:</p>
+<p><img src="./Practica-1/images/QTSIM_config.png" width="auto" height="auto" alt/></p>
+<p>Here, you should select the <code>No pipeline no cache</code> preset, as the processor we studied today is the simplest processor you can implement. Don’t worry, when we complete the units <code>1)Microprocessors and codesign reinforcement</code> and <code>2)RISC-V based system architecture</code> you will be familiar with every preset presented. For now, let’s select the simpler configuration to learn how assembly works. Click on the <code>start empty</code> button.</p>
+<p><img src="./Practica-1/images/Processor_layout.png" width="auto" height="auto" alt/></p>
+<p>Now you are presented with all the building blocks of our processor. From program memory (where we store the instructions), the PC (Wich points to the currently-executing instruction), the registers (Where we store the data that we are operating on), the ALU (Where arithmetic and logic operations are performed) and the data memory (Where data is stored).</p>
+<p>This simulator is able to execute all RISCV32IM code, as it implements the Integer and Multiplication extensions.</p>
+<p>A window with the status of the register file can be opened clicking <span>→</span> <code>Windows\Registers</code>
+<img src="./Practica-1/images/Registers.png" width="auto" height="auto" alt/></p>
+<p>A window with the program code can be open by clicking <span>→</span> <code>Windows\Program</code> resulting in the window below opening. The currently executing instruction is highlighted.</p>
+<p><img src="./Practica-1/images/Pasted-image-20240930133908.png" width="auto" height="auto" alt/></p>
+<p>However, using this window to debug the assembler code can prove hard, as some instructions are translated into pseudoinstructions, breaking your code structuring. To ease debugging we can break up or code into sections with labels such as the above code, where the code is broken down into two labeled sections: <code>start</code>and <code>final</code></p>
+<p>To go into the assembler code corresponding to the <em>final</em> section we use the <code>Machine\Show Symbol</code> feature. Selecting the <code>final</code> symbol and clicking <code>show program</code></p>
+<p><img src="./Practica-1/images/Pasted-image-20240930134351.png" width="auto" height="auto" alt/></p>
+<p>Furthermore, one can set <a href="https://en.wikipedia.org/wiki/Breakpoint" class="external">breakpoints<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> in their assembler program by clicking in the Bp field, as shown below. If the program is ran with the <code>Machine\Run</code> command and encounters an instruction with a breakpoint, it’s execution will pause. Breakpoints are useful to examine the program behavior in certain sections of code where the programmer suspects a bug is pressent.</p>
+<p><img src="./Practica-1/images/Pasted-image-20240930145136.png" width="auto" height="auto" alt/></p>
+<h1 id="exercises">Exercises<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercises" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="exercise-1-first-assembly-program">Exercise 1. first assembly program<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-1-first-assembly-program" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Let’s start reading and programming assembly code.</p>
+<blockquote class="callout question" data-callout="question">
+<div class="callout-title">
+                  <div class="callout-icon"></div>
+                  <div class="callout-title-inner"><p>> Look at the following code snippet and answer the following questions </p></div>
+                  
+                </div>
+<div class="callout-content">
+<blockquote>
+<ol>
+<li>what math operation is defined as s2 result?</li>
+<li>Which memory address does P have?</li>
+<li>Which value will the P address have at the end of the execution?</li>
+</ol>
+</blockquote>
+</div>
+</blockquote>
+<figure data-rehype-pretty-code-figure id="ex1code"><pre tabindex="0" data-language="armasm" data-theme="github-light github-dark"><code data-language="armasm" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>.text</span></span>
+<span data-line><span>_start:</span></span>
+<span data-line><span>la t0, A</span></span>
+<span data-line><span>la t1, B</span></span>
+<span data-line><span>la t2, P</span></span>
+<span data-line><span>lw s0, 0(t0)</span></span>
+<span data-line><span>lw s1, 0(t1)</span></span>
+<span data-line><span>add s2, s1, s0</span></span>
+<span data-line><span>add s2, s2, s2</span></span>
+<span data-line><span>sw s2, 0(t2)</span></span>
+<span data-line> </span>
+<span data-line><span>.data</span></span>
+<span data-line><span>.org 0x400</span></span>
+<span data-line><span>A: .word 3</span></span>
+<span data-line><span>B: .word 2</span></span>
+<span data-line><span>P: .space 4  </span></span></code></pre></figure>
+<p></p>
+<p>Now that we understand this piece of code let’s execute it.
+In our simulator, let’s create a new program by clicking <span>→</span> <code>File\New source</code> and then opening the <code>unknown</code> tab in our program.
+In this file, paste the code presented in <a href="#%5Eex1code" class="internal alias">^ex1code</a>. Then, open the register file and memory contents in <code>Windows\Registers</code> and <code>Windows\Memory</code>
+Run the program and check the values in registers <code>s0</code>,<code>s1</code> and <code>s2</code> and the value of the memory address of <code>P</code>. Are this values what you expected?</p>
+<p><strong>Upload your answers in a file named exercise1.txt to poliformat.</strong></p>
+<h2 id="exercise-2-control-flow">Exercise 2: control flow<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-2-control-flow" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Let’s check your knowledge of control flow by implementing the following C++ code into assembly:</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="cpp" data-theme="github-light github-dark"><code data-language="cpp" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> list[] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> {</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">};</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (list[i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">-</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> list[i]) {</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">	swap</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">list[i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">-</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">], </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">list[i]);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span></code></pre></figure>
+<p>Translate the above code into assembly by using the template below:</p>
+<pre><code>.text
+.globl _start
+_start:
+la a0, list
+li a1, 1
+#WRITE YOUR CODE HERE, you must use the provided a0 and a1 registers 
+
+.data
+.org 0x400
+list:
+	.word 5, 2
+</code></pre>
+<p><strong>Write your solution into a file called <em>exercise2.s</em> and attach it in poliformat.</strong></p>
+<h2 id="exercise-3-calling-conventions-and-stack">Exercise 3: Calling conventions and stack<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-3-calling-conventions-and-stack" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Let’s take the case that I am writing an assembly program where I need to call a function <code>foo</code>.  Which registers should I save before doing so? Where should I save such registers? Remember consulting the provided <a href="https://cass-kul.github.io/files/riscv-card.pdf" class="external">reference card<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> calling conventions. Write the necessary procedure to call and return from foo preserving the <code>t0</code>,<code>t3</code>, <code>a0</code> and <code>a3</code>, use the template below:</p>
+<pre><code>.text
+.globl _start
+# Set all registers to some value
+li t0, 1
+li t3, 2
+li a0, 3
+li a3, 4
+
+## WRITE YOUR CODE to save the previously set registers here
+...
+jal foo
+## WRITE YOUR CODE to restore the saved registers here
+...
+
+
+# Check if all registers have the correct value
+addi t0, t0, -1
+bnez t0, error
+addi t3, t3, -2
+bnez t3, error
+addi a0, a0, -3
+bnez a0, error
+addi a3, a3, -4
+bnez a3, error
+
+#pass:
+li a7, 97          #; Exit syscall
+li a0, 0           #; Exit without error
+ecall              #; Exit, success
+error:
+li a7, 97          #; Exit syscall
+li a0, 1           #; Exit with error
+ecall              #; Exit, failure
+
+foo:
+    addi t0, t0, 1
+    addi t3, t3, 1
+    addi a0, a0, 1
+    addi a3, a3, 1
+    ret
+</code></pre>
+<p><strong>Write your solution into a file called <em>exercise3.s</em> and attach it in poliformat</strong></p>
+<h2 id="exercise-4-bubble-sort">Exercise 4: <a href="https://en.wikipedia.org/wiki/Bubble_sort" class="external">Bubble sort<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-4-bubble-sort" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>Bubble sort is a sorting algorithm known for it’s simplicity. It sorts an array of numbers in an ascending or descending order.</p>
+<p>For this exercise, we will translate the following bubble sort code into RISC-V assembly following the contents studied in the class.</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="cpp" data-theme="github-light github-dark"><code data-language="cpp" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> swap</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> *</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;">addr0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int*</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;"> addr1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">){</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">	int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> temp </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> *</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">addr0;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">	*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">addr0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">addr1;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">	*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">addr1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">temp;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> bubsort</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> *</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;">list</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;"> size</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    bool</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> swapped;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    do</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> {</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        swapped </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> false</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> size;i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">++</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">            if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (list[i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">-</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> list[i]) {</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">               swap</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">list[i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">-</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">], </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">list[i]);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">               swapped </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">            }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    } </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">while</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (swapped);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span></code></pre></figure>
+<p>Remember that your procedure processes arguments using the <code>a[x]</code> registers. In this function, your procedure receives the list address in register <code>a0</code> and the size of the array to sort in register <code>a1</code>. For simplicity, we divided the bubble sort algorithm into two methods, swap and bubsort. Please implement and test them separately.</p>
+<p id="7774cc">Here is the main function that calls and tests your bubble sort code: </p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="armasm" data-theme="github-light github-dark"><code data-language="armasm" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>.text</span></span>
+<span data-line><span>.globl _start</span></span>
+<span data-line><span>_start:</span></span>
+<span data-line><span>	la a0, swap_space</span></span>
+<span data-line><span>	addi a1, a0, 4</span></span>
+<span data-line><span>	jal swap</span></span>
+<span data-line><span>verify_swap:</span></span>
+<span data-line><span>	la a1, swap_space</span></span>
+<span data-line><span>	lw a0, 0(a1)</span></span>
+<span data-line><span>	li a2, 1</span></span>
+<span data-line><span>	bne a0, a2, fail</span></span>
+<span data-line><span>	lw a0, 4(a1)</span></span>
+<span data-line><span>	bne a0, zero, fail</span></span>
+<span data-line><span>	</span></span>
+<span data-line><span>    la a0, list        #; Load address of the list into a0</span></span>
+<span data-line><span>    li a1, 7           #; Size of the list in a1</span></span>
+<span data-line> </span>
+<span data-line><span>    jal bubsort       #; Call the bubble sort function</span></span>
+<span data-line> </span>
+<span data-line><span>    #; Verification loop (compare sorted list to expected list)</span></span>
+<span data-line><span>    la t0, list        #; Load address of the sorted list</span></span>
+<span data-line><span>    la t1, expected_list  #; Load address of the expected sorted list</span></span>
+<span data-line><span>    li t2, 7           #; List size</span></span>
+<span data-line> </span>
+<span data-line><span>verify:</span></span>
+<span data-line><span>    beqz t2, pass      #; If size is zero, list is sorted correctly</span></span>
+<span data-line><span>    lw t3, 0(t0)       #; Load current element from sorted list</span></span>
+<span data-line><span>    lw t4, 0(t1)       #; Load current element from expected list</span></span>
+<span data-line><span>    bne t3, t4, fail   #; If the elements don't match, test failed</span></span>
+<span data-line><span>    addi t0, t0, 4     #; Move to next element in sorted list</span></span>
+<span data-line><span>    addi t1, t1, 4     #; Move to next element in expected list</span></span>
+<span data-line><span>    addi t2, t2, -1    #; Decrease list size counter</span></span>
+<span data-line><span>    j verify           #; Repeat for the rest of the list</span></span>
+<span data-line> </span>
+<span data-line><span>pass:</span></span>
+<span data-line><span>    li a7, 97          #; Exit syscall</span></span>
+<span data-line><span>    li a0, 0           #; Exit without error</span></span>
+<span data-line><span>    ecall              #; Exit, success</span></span>
+<span data-line> </span>
+<span data-line><span>fail:</span></span>
+<span data-line><span>    li a7, 97          #; Exit syscall</span></span>
+<span data-line><span>    li a0, 1           #; Exit with error</span></span>
+<span data-line><span>    ecall              #; Exit, failure</span></span>
+<span data-line> </span>
+<span data-line><span>swap: #; swaps a0 and a1 values</span></span>
+<span data-line><span>	#;a0: address of first value to swap</span></span>
+<span data-line><span>	#;a1: address of second value to swap</span></span>
+<span data-line><span>	#; YOUR CODE GOES HERE</span></span>
+<span data-line> </span>
+<span data-line><span>bubsort:</span></span>
+<span data-line><span>	#; a0: Integer list to sort</span></span>
+<span data-line><span>	#; a1: Length of the list to sort</span></span>
+<span data-line><span>	#; YOUR CODE GOES HERE</span></span>
+<span data-line> </span>
+<span data-line><span>.data</span></span>
+<span data-line><span>.org 0x400</span></span>
+<span data-line><span>list: </span></span>
+<span data-line><span>    .word 10, 5, 3, 8, 12, 2, 7  #; Example unsorted list</span></span>
+<span data-line> </span>
+<span data-line><span>size:</span></span>
+<span data-line><span>    .word 7                      #; Size of the list</span></span>
+<span data-line> </span>
+<span data-line><span>expected_list: </span></span>
+<span data-line><span>    .word 2, 3, 5, 7, 8, 10, 12  #; Expected sorted list</span></span>
+<span data-line> </span>
+<span data-line><span>swap_space:</span></span>
+<span data-line><span>	.word 0, 1</span></span></code></pre></figure>
+<p><strong>Write your solution into <em>exercise4.s</em> and attach it in poliformat</strong></p>
+<h2 id="exercise-5-asm-bubble-sort-with-c-code">Exercise 5: ASM bubble sort with C++ code<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-5-asm-bubble-sort-with-c-code" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>If you want to compile this program and are on a windows computer, please download the RISC-V crosscompiler <a href="https://sysprogs.com/getfile/1107/risc-v-gcc10.1.0.exe" class="external">from this link<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a> and execute all commands from windows PowerShell.</p>
+<p>Now we provide the testcase in C++. Adapt the previously-coded bubble sort algorithm so that it can be integrated into the following C++ program. Compile it and execute it in the simulator.</p>
+<p><strong>Remember, if you want to use callee saved registers you need to push them into the stack.</strong></p>
+<p>main.cpp</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="cpp" data-theme="github-light github-dark"><code data-language="cpp" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">// Declaration of the external bubble sort function in assembly</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">extern</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;"> &quot;C&quot;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> bubsort</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> list, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> size);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">// Verification function to compare two lists</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">bool</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> verify</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">const</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> int*</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;"> sorted_list</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">const</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> int*</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;"> expected_list</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;"> size</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">; i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> size; i</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">++</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (sorted_list[i] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">!=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> expected_list[i]) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">            return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> false</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Lists do not match</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    }</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Lists match</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">int</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;"> main</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">() {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> list[] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> {</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">10</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">5</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">12</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">7</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">};</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Example unsorted list</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> size </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 7</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">  // Size of the list</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> expected_list[] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> {</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">5</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">7</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">10</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">12</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">};</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Expected sorted list</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">    // Call the bubble sort function</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">    bubsort</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(list, size);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Pass the array and size</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">    // Verification: compare the sorted list with the expected list</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">    if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;">verify</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(list, expected_list, size)) {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        __asm__</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">li a7, 97</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">\n\t</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">li a0, 0</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">\n\t</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">ecall</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        );</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Success</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    } </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">else</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        __asm__</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">li a7, 97</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">\n\t</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">li a0, 1</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">\n\t</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">	        &quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">ecall</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;">&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">        );</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">        return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;"> // Failure</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    }</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span></code></pre></figure>
+<p>bubsort.S</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="armasm" data-theme="github-light github-dark"><code data-language="armasm" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>.section .text</span></span>
+<span data-line><span>.global bubsort</span></span>
+<span data-line><span>bubsort:</span></span>
+<span data-line><span>	# Arguments: </span></span>
+<span data-line><span>	# a0: address of the list (array) </span></span>
+<span data-line><span>	# a1: size of the list</span></span>
+<span data-line> </span>
+<span data-line><span>	#WRITE bubble sort code here</span></span>
+<span data-line><span>	### .......</span></span>
+<span data-line><span>	### .......</span></span>
+<span data-line> </span>
+<span data-line><span>	ret  # return from function</span></span></code></pre></figure>
+<p><strong>Attach bubsort.s in poliformat</strong></p>
+<p>To compile this program, we will need a C++ compiler. However, the windows machines in our laboratory are x86, and we want to compile RISC-V code. That’s why we need a crosscompiler.
+Crosscompilers are tools that are able to produce code for different architectures to those that they are compiled for. In this case, our host architecture is a x86 computer, while our target architecture is RISC-V. We provide the RISC-V gnu toolchain to compile RISC-V binaries from our x86 architecture. All toolchain utilities are accessible from the terminal with the prefix riscv64-unknown-elf-(program_name).exe
+Once your <code>bubsort.s</code> code is completed create a new file in the directory where you stored your <code>main.cpp</code> and <code>bubsort.S</code> with the name <code>crt0local.S</code> with the following contents</p>
+<pre><code>/* minimal replacement of crt0.o which is else provided by C library */
+
+.globl main
+.globl _start
+.globl __start
+
+.option norelax
+
+.text
+
+__start:
+_start:
+        .option push
+        .option norelax
+        la gp, __global_pointer$
+        .option pop
+        la      sp, __stack_end
+        addi    a0, zero, 0
+        addi    a1, zero, 0
+        jal     main
+quit:
+        addi    a0, zero, 0
+        addi    a7, zero, 93  /* SYS_exit */
+        ecall
+
+loop:   ebreak
+        beq     zero, zero, loop
+
+.bss
+
+__stack_start:
+        .skip   4096
+__stack_end:
+
+.end _start
+</code></pre>
+<p>This file is used to set all needed variables for calling our cpp main function.
+Once you have all three files navigate with your console into the target directory and compile your program using the following command:
+<code>riscv64-unknown-elf-gcc.exe -march=rv32i -mabi=ilp32 -nostdlib .\crt0local.S .\bubsort.S .\main.cpp -lgcc -o bubsort.elf</code>
+This will produce the <code>bubsort.elf</code> binary in your directory. To disassemble this RISC-V binary and see the compiled contents execute the following command:
+<code>riscv64-unkown-elf-objdump.exe -S bubsort.elf > my_compiled_code.S</code>
+Execute the <code>bubsort.elf</code> binary in the simulator by clicking <code>File->New simulation->Elf executable (your file) -> Load machine</code> and verify that everything works correctly.</p>
+<p><strong>Zip your <code>main.cpp, bubsort.S, crt0local.S and bubsort.elf</code> into a zip file called <code>exercise5.zip</code> and upload it to Poliformat.</strong></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div id="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false}"></div><button id="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div id="global-graph-outer"><div id="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true}"></div></div></div><div class="toc desktop-only"><button type="button" id="toc" class aria-controls="toc-content" aria-expanded="true"><h3>Table of Contents</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="toc-content" class><ul class="overflow"><li class="depth-0"><a href="#gnu-assembler-directives" data-for="gnu-assembler-directives">GNU assembler directives</a></li><li class="depth-0"><a href="#the-qtrvsim-simulator" data-for="the-qtrvsim-simulator">The QTRVSIM simulator</a></li><li class="depth-0"><a href="#exercises" data-for="exercises">Exercises</a></li><li class="depth-1"><a href="#exercise-1-first-assembly-program" data-for="exercise-1-first-assembly-program">Exercise 1. first assembly program</a></li><li class="depth-1"><a href="#exercise-2-control-flow" data-for="exercise-2-control-flow">Exercise 2: control flow</a></li><li class="depth-1"><a href="#exercise-3-calling-conventions-and-stack" data-for="exercise-3-calling-conventions-and-stack">Exercise 3: Calling conventions and stack</a></li><li class="depth-1"><a href="#exercise-4-bubble-sort" data-for="exercise-4-bubble-sort">Exercise 4: Bubble sort</a></li><li class="depth-1"><a href="#exercise-5-asm-bubble-sort-with-c-code" data-for="exercise-5-asm-bubble-sort-with-c-code">Exercise 5: ASM bubble sort with C++ code</a></li></ul></div></div><div class="backlinks"><h3>Backlinks</h3><ul class="overflow"><li><a href="./Programming-our-processor" class="internal">Programming our processor</a></li><li><a href="./" class="internal">Microprocessors and codesign labs</a></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v4.4.0</a> © 2025</p><ul><li><a href="https://github.com/jackyzha0/quartz">GitHub</a></li><li><a href="https://discord.gg/cRFFHYye7t">Discord Community</a></li></ul></footer></div></div></body><script type="application/javascript">function c(){let t=this.parentElement;t.classList.toggle("is-collapsed");let l=t.classList.contains("is-collapsed")?this.scrollHeight:t.scrollHeight;t.style.maxHeight=l+"px";let o=t,e=t.parentElement;for(;e;){if(!e.classList.contains("callout"))return;let n=e.classList.contains("is-collapsed")?e.scrollHeight:e.scrollHeight+o.scrollHeight;e.style.maxHeight=n+"px",o=e,e=e.parentElement}}function i(){let t=document.getElementsByClassName("callout is-collapsible");for(let s of t){let l=s.firstElementChild;if(l){l.addEventListener("click",c),window.addCleanup(()=>l.removeEventListener("click",c));let e=s.classList.contains("is-collapsed")?l.scrollHeight:s.scrollHeight;s.style.maxHeight=e+"px"}}}document.addEventListener("nav",i);window.addEventListener("resize",i);
+</script><script type="module">
+          let mermaidImport = undefined
+          document.addEventListener('nav', async () => {
+            if (document.querySelector("code.mermaid")) {
+              mermaidImport ||= await import('https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.7.0/mermaid.esm.min.mjs')
+              const mermaid = mermaidImport.default
+              const darkMode = document.documentElement.getAttribute('saved-theme') === 'dark'
+              mermaid.initialize({
+                startOnLoad: false,
+                securityLevel: 'loose',
+                theme: darkMode ? 'dark' : 'default'
+              })
+
+              await mermaid.run({
+                querySelector: '.mermaid'
+              })
+            }
+          });
+          </script><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/copy-tex.min.js" type="application/javascript"></script><script src="./postscript.js" type="module"></script></html>
