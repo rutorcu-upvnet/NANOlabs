@@ -29,8 +29,9 @@ jobs:
         run: npm ci
         shell: bash
 
-      - name: Build site
-        run: npm run build
+      - name: Build site (use repository `content` folder)
+        # explicitly build from the `content` folder so CI uses your content
+        run: npx quartz build -d content
         shell: bash
 
       - name: "Debug: list build output (public)"
