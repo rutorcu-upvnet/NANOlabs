@@ -1,7 +1,7 @@
 ---
 title: Microprocessors and codesign labs
 ---
-For questions mail pabance@upv.es
+For questions mail rutorcu@upv.es or mpeiro@upv.es
 
 This is the webpage contains the laboratory sessions of the [NANO](https://nano.upv.es/) Microprocessors and Codesign itinerary. The following labs are online at the moment:
 
@@ -10,6 +10,7 @@ This is the webpage contains the laboratory sessions of the [NANO](https://nano.
 - [[Simple RISC-V monocycle processor]]
 - [[Full RV32I monocycle processor]]
 - [[Programming our processor]]
+- [[Little Endian Converter]]
 
 **HW/SW codesign**
 - [[Handling interrupts in the Ibex system]]

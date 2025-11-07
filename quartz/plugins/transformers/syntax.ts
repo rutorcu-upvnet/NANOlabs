@@ -9,6 +9,8 @@ interface Theme extends Record<string, CodeTheme> {
 interface Options {
   theme?: Theme
   keepBackground?: boolean
+  // map language aliases (fenced code label -> shiki language)
+  aliases?: Record<string, string>
 }
 
 const defaultOptions: Options = {
@@ -17,6 +19,13 @@ const defaultOptions: Options = {
     dark: "github-dark",
   },
   keepBackground: false,
+  // common assembly labels map to GNU assembler highlight
+  aliases: {
+    asm: "gas",
+    riscv: "gas",
+    armasm: "gas",
+    gas: "gas",
+  },
 }
 
 export const SyntaxHighlighting: QuartzTransformerPlugin<Partial<Options>> = (userOpts) => {
