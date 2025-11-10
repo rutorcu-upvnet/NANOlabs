@@ -4,7 +4,7 @@ draft: false
 tags:
 ---
 In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image:
-![[Monocycle_PH_final_plain.svg]]
+![[Monocycle_PH_final_plain.png]]
 
 ## All RV32I opcodes and their meaning
 As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor. Below a list of the opcodes that the processor that we implement in this practice supports:

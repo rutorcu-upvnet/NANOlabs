@@ -90,7 +90,7 @@ In our simulator, let's create a new program by clicking -> `File\New source` an
 In this file, paste the code presented in [[#^ex1code]]. Then, open the register file and memory contents in `Windows\Registers` and `Windows\Memory`
 Run the program and check the values in registers `s0`,`s1` and `s2` and the value of the memory address of `P`. Are this values what you expected?
 
-> [!exclamation] Upload your answers in a file named *exercise1.s* to poliformat
+> [!exclamation] Upload your answers in a file named `exercise1.s` to poliformat
 
 ## Exercise 2: control flow
 
@@ -121,7 +121,7 @@ list:
 	.word 5, 2
 ```
 
-> [!exclamation] Write your solution into a file called *exercise2.s* and attach it in poliformat
+> [!exclamation] Write your solution into a file called `exercise2.s` and attach it in poliformat
 
 ## Exercise 3: Calling conventions and stack
 
@@ -169,7 +169,7 @@ foo:
     ret
 ```
 
-> [!exclamation] Write your solution into a file called *exercise3.s* and attach it in poliformat
+> [!exclamation] Write your solution into a file called `exercise3.s` and attach it in poliformat
 
 ## Exercise 4: [Bubble sort](https://en.wikipedia.org/wiki/Bubble_sort)
 
@@ -271,7 +271,7 @@ swap_space:
 	.word 0, 1
 ```
 
-> [!exclamation] Write your solution into *exercise4.s* and attach it in poliformat
+> [!exclamation] Write your solution into `exercise4.s` and attach it in poliformat
 
 ## Exercise 5: ASM bubble sort with C++ code
 
@@ -390,7 +390,7 @@ riscv64-unknown-elf-gcc.exe -march=rv32i -mabi=ilp32 -nostdlib .\crt0local.s .\b
 
 This will produce the `bubsort.elf` binary in your directory. To disassemble this RISC-V binary and see the compiled contents execute the following command:
 
-```console
+```
 riscv64-unknown-elf-objdump.exe -S bubsort.elf > my_compiled_code.s
 ```
 
@@ -398,6 +398,6 @@ Execute the `bubsort.elf` binary in the simulator by clicking
 `File->New simulation->Elf executable (your file) -> Load machine`
 and verify that everything works correctly.
 
-> [!exclamation] Zip your `main.cpp, bubsort.s, crt0local.s and bubsort.elf` into a zip file called `exercise5.zip` and upload it to poliformat
+> [!exercise] Zip your `main.cpp`, `bubsort.s`, `crt0local.s` and `bubsort.elf` into a zip file called `exercise5.zip` and upload it to poliformat
 
 next > [[Simple RISC-V monocycle processor]]

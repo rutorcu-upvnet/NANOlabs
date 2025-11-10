@@ -94,8 +94,7 @@ Full ALUControl unit behaviour is defined in Exercise 2.
 
 Take the description of the control unit presented in the previous section and define it's outputs from the four different instruction opcodes: `R-format`, `LW`, `SW`, `BEQ`. Take the instruction opcodes from Table 19.3 of [The RISC-V spec](https://riscv.org/wp-content/uploads/2017/05/riscv-spec-v2.2.pdf) .The ALUOp output is defined in the [[Simple RISC-V monocycle processor#ALUcontrol unit]]
 
-
-Fill the following table, create a snapshot of it and present it as `exercise1.png` in poliformat. If in doubt ask the professor, this step is crucial in the design of your processor.
+> [!exclamation] Fill the following table, create a snapshot of it and present it as `exercise1.png` in poliformat. If in doubt ask the professor, this step is crucial in the design of your processor.
 
 | Input/output | Signal name | R-format                                                 | LW                                                       | SW                                                       | BEQ                                                      |
 | ------------ | ----------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
@@ -116,7 +115,7 @@ Fill the following table, create a snapshot of it and present it as `exercise1.p
 
 ## Exercise 2. Generate the ALUControl output signals
 
-Fill the following table of the output ALU action from the *ALUOp*, *Funct7* and *Funct3* fields. An example of a valid ALU action is add, sub, and, or... with the corresponding ALU control output from the ALU description in [[Simple RISC-V monocycle processor#ALU]]. Create a capture of the following table with the missing fields full and attach it in poliformat in a file named `exercise2.png`
+> [!exclamation] Fill the following table of the output ALU action from the *ALUOp*, *Funct7* and *Funct3* fields. An example of a valid ALU action is add, sub, and, or... with the corresponding ALU control output from the ALU description in [[Simple RISC-V monocycle processor#ALU]]. Create a capture of the following table with the missing fields full and attach it in poliformat in a file named `exercise2.png`
 
 | **Inst Opcode** | **ALUOp** | **Operation** |                        **Funct7**                        |                        **Funct3**                        |               **ALU action**               |                  **ALU control output**                  |
 | :-------------: | :-------: | :-----------: | :------------------------------------------------------: | :------------------------------------------------------: | :----------------------------------------: | :------------------------------------------------------: |
@@ -130,7 +129,7 @@ Fill the following table of the output ALU action from the *ALUOp*, *Funct7* and
 
 ## Exercise 3. Implementing the control module
 
-Open the Vivado project provided from poliformat. With the Vivado GUI open the Control module located in the file *Control.sv* and implement the logic so that outputs are driven as described in [[Simple RISC-V monocycle processor#Exercise 1. Generate the Control signals of the processor]]
+Open the Vivado project provided from poliformat. With the Vivado GUI open the Control module located in the file *control.sv* and implement the logic so that outputs are driven as described in [[Simple RISC-V monocycle processor#Exercise 1. Generate the Control signals of the processor]]
 
 ## Exercise 4. Implementing the ALU control module
 
@@ -138,7 +137,7 @@ Implement the ALUControl module located in the *alu_control.sv* file so that out
 
 ## Exercise 5. Implementing the ALU module
 
-Implement the ALU module located in the *ph_alu.sv* file so that it follows the behavior described in [[Simple RISC-V monocycle processor#ALU l]]
+Implement the ALU module located in the *alu.sv* file so that it follows the behavior described in [[Simple RISC-V monocycle processor#ALUcontrol unit]]
 
 ## Exercise 6. Implementing the immediate generator
 
