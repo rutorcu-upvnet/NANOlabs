@@ -25,6 +25,12 @@ const defaultOptions: Options = {
     riscv: "gas",
     armasm: "gas",
     gas: "gas",
+    // common terminal/console labels -> highlight as shell/bash
+    console: "bash",
+    terminal: "bash",
+    output: "bash",
+    shell: "bash",
+    prompt: "bash",
   },
 }
 

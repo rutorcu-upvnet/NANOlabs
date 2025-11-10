@@ -3,6 +3,9 @@ title: RISC-V assembly programming
 draft: false
 tags:
 ---
+
+prev > [[index]]
+
 In this session you should be provided with a [RISC-V programming reference card](https://cass-kul.github.io/files/riscv-card.pdf).
 In this reference card you will find the following useful information:
 1. RV32I instructions
@@ -16,8 +19,8 @@ In this reference card you will find the following useful information:
 Some general GNU assembler directives are essential when writing code.
 - We use the `.text` and `.data` assembler macros to divide our code (in the text section) and program data (in the data section).
 - We use the `.globl` assembler directive to define that a procedure label should be available for linking with other parts of the code. This is specially useful for linking assembly procedures with other files.
-- We use the `.word`,`.ascii` and `.asciz` to declare variables with numbers or strings in our `.data` section. Words are used for defining integers, while `.ascii` and `.asciz` are used for defining strings. The difference between `.ascii` and `.asciz` is that `.asciz` appends a trailing zero to all strings, while `.ascii` does not. As such, a two letter string would take 2 bytes in ascii and three bytes in asciiz.
-- We use the `.equ` to define assembler macros. Where `.equ SERIAL_PORT BASE 0xffffc000` would define a text substitution of the string `SERIAL_PORT_BASE` with the string `0xffffc000` in our code
+- We use the `.word`,`.ascii` and `.asciz` to declare variables with numbers or strings in our `.data` section. Words are used for defining integers, while `.ascii` and `.asciz` are used for defining strings. The difference between `.ascii` and `.asciz` is that `.asciz` appends a trailing zero to all strings, while `.ascii` does not. As such, a two letter string would take 2 bytes in ascii and three bytes in asciz.
+- We use the `.equ` to define assembler macros. Where `.equ SERIAL_PORT BASE 0xffffc000` would define a text substitution of the string `SERIAL_PORT_BASE` with the string `0xffffc000` in our code.
 - We use the `.org` directive to change the program address of the following data. This directive can be used in `.text` and `.data` regions. When used in text regions it defines the starting address where the program code will be stored. When used in data regions it defines the starting address where the data is stored.
 
 # The [QTRVSIM](https://comparch.edu.cvut.cz/qtrvsim/app/) simulator
@@ -28,7 +31,7 @@ When you open the QTSim simulator the following window will appear:
 
 ![[QTSIM_config.png]]
 
-Here, you should select the `No pipeline no cache` preset, as the processor we studied today is the simplest processor you can implement. Don't worry, when we complete the units `1)Microprocessors and codesign reinforcement` and `2)RISC-V based system architecture` you will be familiar with every preset presented. For now, let's select the simpler configuration to learn how assembly works. Click on the `start empty` button.
+Here, you should select the `No pipeline no cache` preset, as the processor we studied today is the simplest processor you can implement. Don't worry, when we complete the units `Microprocessors and codesign reinforcement` and `RISC-V based system architecture` you will be familiar with every preset presented. For now, let's select the simpler configuration to learn how assembly works. Click on the `start empty` button.
 
 ![[Processor_layout.png]]
 
@@ -59,11 +62,11 @@ Furthermore, one can set [breakpoints](https://en.wikipedia.org/wiki/Breakpoint)
 Let's start reading and programming assembly code.
 
 >[!question] Look at the following code snippet and answer the following questions
-> > 1. what math operation is defined as s2 result?
+> > 1. What math operation is defined as s2 result?
 > > 2. Which memory address does P have?
 > > 3. Which value will the P address have at the end of the execution?
 
-```asm
+```asm (^ex1code)
 .text
 _start:
 la t0, A
@@ -82,17 +85,17 @@ B: .word 2
 P: .space 4
 ```
 
-^ex1code
-
 Now that we understand this piece of code let's execute it.
 In our simulator, let's create a new program by clicking -> `File\New source` and then opening the `unknown` tab in our program.
 In this file, paste the code presented in [[#^ex1code]]. Then, open the register file and memory contents in `Windows\Registers` and `Windows\Memory`
 Run the program and check the values in registers `s0`,`s1` and `s2` and the value of the memory address of `P`. Are this values what you expected?
->[!exclamation] Upload your answers in a file named *exercise1.s* to poliformat
+
+> [!exclamation] Upload your answers in a file named *exercise1.s* to poliformat
 
 ## Exercise 2: control flow
 
 Let's check your knowledge of control flow by implementing the following C++ code into assembly:
+
 ```cpp
 int list[] = {2,1};
 i = 1;
@@ -100,13 +103,16 @@ if (list[i-1] > list[i]) {
 	swap(&list[i-1], &list[i]);
 }
 ```
+
 Translate the above code into assembly by using the template below:
+
 ```asm
 .text
 .globl _start
 _start:
 la a0, list
 li a1, 1
+
 #WRITE YOUR CODE HERE, you must use the provided a0 and a1 registers 
 
 .data
@@ -115,11 +121,12 @@ list:
 	.word 5, 2
 ```
 
->[!exclamation] Write your solution into a file called *exercise2.s* and attach it in poliformat
+> [!exclamation] Write your solution into a file called *exercise2.s* and attach it in poliformat
 
 ## Exercise 3: Calling conventions and stack
 
 Let's take the case that I am writing an assembly program where I need to call a function `foo`.  Which registers should I save before doing so? Where should I save such registers? Remember consulting the provided [reference card](https://cass-kul.github.io/files/riscv-card.pdf) calling conventions. Write the necessary procedure to call and return from foo preserving the `t0`,`t3`, `a0` and `a3`, use the template below:
+
 ```asm
 .text
 .globl _start
@@ -130,7 +137,9 @@ li a0, 3
 li a3, 4
 
 ## WRITE YOUR CODE to save the previously set registers here
+
 jal foo
+
 ## WRITE YOUR CODE to restore the saved registers here
 
 # Check if all registers have the correct value
@@ -159,12 +168,15 @@ foo:
     addi a3, a3, 1
     ret
 ```
->[!exclamation] Write your solution into a file called *exercise3.s* and attach it in poliformat
+
+> [!exclamation] Write your solution into a file called *exercise3.s* and attach it in poliformat
 
 ## Exercise 4: [Bubble sort](https://en.wikipedia.org/wiki/Bubble_sort)
 
 Bubble sort is a sorting algorithm known for it's simplicity. It sorts an array of numbers in an ascending or descending order. 
+
 For this exercise, we will translate the following bubble sort code into RISC-V assembly following the contents studied in the class.
+
 ```cpp (^bubble)
 void swap(int *addr0, int* addr1){
 	int temp = *addr0;
@@ -185,8 +197,10 @@ void bubsort(int *list, int size) {
     } while (swapped);
 }
 ```
+
 Remember that your procedure processes arguments using the `a[x]` registers. In this function, your procedure receives the list address in register `a0` and the size of the array to sort in register `a1`. For simplicity, we divided the bubble sort algorithm into two methods, swap and bubsort. Please implement and test them separately.
 Here is the main function that calls and tests your bubble sort code: ^7774cc
+
 ```asm
 .text
 .globl _start
@@ -256,11 +270,13 @@ expected_list:
 swap_space:
 	.word 0, 1
 ```
->[!exclamation] Write your solution into *exercise4.s* and attach it in poliformat
+
+> [!exclamation] Write your solution into *exercise4.s* and attach it in poliformat
 
 ## Exercise 5: ASM bubble sort with C++ code
 
 If you want to compile this program and are on a windows computer, please download the RISC-V crosscompiler [from this link](https://sysprogs.com/getfile/1107/risc-v-gcc10.1.0.exe) and execute all commands from windows PowerShell.
+
 Now we provide the testcase in C++. Adapt the previously-coded bubble sort algorithm so that it can be integrated into the following C++ program. Compile it and execute it in the simulator.
 **Remember, if you want to use callee saved registers you need to push them into the stack.**
 
@@ -306,7 +322,7 @@ int main() {
 }
 ```
 
-bubsort.S
+bubsort.s
 ```asm
 .section .text
 .global bubsort
@@ -316,16 +332,15 @@ bubsort:
 	# a1: size of the list
 
 	#WRITE bubble sort code here
-	### .......
-	### .......
 
 	ret  # return from function
 ```
->[!exclamation] Attach bubsort.s in poliformat
 
 To compile this program, we will need a C++ compiler. However, the windows machines in our laboratory are x86, and we want to compile RISC-V code. That's why we need a crosscompiler.
+
 Crosscompilers are tools that are able to produce code for different architectures to those that they are compiled for. In this case, our host architecture is a x86 computer, while our target architecture is RISC-V. We provide the RISC-V gnu toolchain to compile RISC-V binaries from our x86 architecture. All toolchain utilities are accessible from the terminal with the prefix riscv64-unknown-elf-(program_name).exe
-Once your `bubsort.s` code is completed create a new file in the directory where you stored your `main.cpp` and `bubsort.S` with the name `crt0local.S` with the following contents
+
+Once your `bubsort.s` code is completed create a new file in the directory where you stored your `main.cpp` and `bubsort.s` with the name `crt0local.s` with the following contents
 
 ```asm
 /* minimal replacement of crt0.o which is else provided by C library */
@@ -364,15 +379,25 @@ __stack_end:
 
 .end _start
 ```
+
 This file is used to set all needed variables for calling our cpp main function.
+
 Once you have all three files navigate with your console into the target directory and compile your program using the following command:
 
-`riscv64-unknown-elf-gcc.exe -march=rv32i -mabi=ilp32 -nostdlib .\crt0local.S .\bubsort.S .\main.cpp -lgcc -o bubsort.elf`
+```console
+riscv64-unknown-elf-gcc.exe -march=rv32i -mabi=ilp32 -nostdlib .\crt0local.s .\bubsort.s .\main.cpp -lgcc -o bubsort.elf
+```
 
 This will produce the `bubsort.elf` binary in your directory. To disassemble this RISC-V binary and see the compiled contents execute the following command:
 
-`riscv64-unknown-elf-objdump.exe -S bubsort.elf > my_compiled_code.S`
+```console
+riscv64-unknown-elf-objdump.exe -S bubsort.elf > my_compiled_code.s
+```
 
-Execute the `bubsort.elf` binary in the simulator by clicking `File->New simulation->Elf executable (your file) -> Load machine` and verify that everything works correctly.
+Execute the `bubsort.elf` binary in the simulator by clicking 
+`File->New simulation->Elf executable (your file) -> Load machine`
+and verify that everything works correctly.
 
->[!exclamation] Zip your `main.cpp, bubsort.S, crt0local.S and bubsort.elf` into a zip file called `exercise5.zip` and upload it to poliformat
+> [!exclamation] Zip your `main.cpp, bubsort.s, crt0local.s and bubsort.elf` into a zip file called `exercise5.zip` and upload it to poliformat
+
+next > [[Simple RISC-V monocycle processor]]

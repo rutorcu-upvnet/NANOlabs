@@ -13,6 +13,9 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      # default base path for project pages; will become "/<repo-name>/"
+      REPO_PATH: "/${{ github.event.repository.name }}/"
 
     steps:
       - name: Checkout repository
@@ -64,7 +67,10 @@ jobs:
           touch public/.nojekyll
 
           # insert base href if needed (adjust REPO_PATH if you host under different path)
-          REPO_PATH="/NANOlabs/"
+          # By default we use the repository name so project pages work at
+          # https://<user>.github.io/<repo>/ — override by setting the
+          # REPO_PATH env var in the workflow or repository secrets if needed.
+          REPO_PATH="${REPO_PATH}"
           find public -name '*.html' -print0 | while IFS= read -r -d '' f; do
             if ! grep -qi "<base " "$f"; then
               perl -0777 -pe 's|<head>|<head>\n  <base href="'"${REPO_PATH}"'">|' -i "$f"
