@@ -6,59 +6,59 @@
       <description>Last 10 notes on Microprocessors and Codesign</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
+    <title>Programming our processor</title>
+    <link>https://quartz.jzhao.xyz/Programming-our-processor</link>
+    <guid>https://quartz.jzhao.xyz/Programming-our-processor</guid>
+    <description>Preamble and setup Until now we have learned how to program in RV32I assembly RISC-V assembly programming and implemented a RV32I singlecycle processor Simple RISC-V monocycle ...</description>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
+  </item><item>
     <title>RISC-V assembly programming</title>
     <link>https://quartz.jzhao.xyz/RISC-V-assembly-programming</link>
     <guid>https://quartz.jzhao.xyz/RISC-V-assembly-programming</guid>
     <description>prev &gt; index In this session you should be provided with a RISC-V programming reference card. In this reference card you will find the following useful information: RV32I instructions C compiler data sizes All RISC-V pseudoinstructions and their assembly translation The stack layout of method calling convention The RISC-V CSR registers (That we will not use in this practice) GNU assembler directives Some general GNU assembler directives are essential when writing code.</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>Simple RISC-V monocycle processor</title>
     <link>https://quartz.jzhao.xyz/Simple-RISC-V-monocycle-processor</link>
     <guid>https://quartz.jzhao.xyz/Simple-RISC-V-monocycle-processor</guid>
     <description>prev &gt; RISC-V assembly programming In this practice session we will implement the simple processor which we have seen in the corresponding theory session ...</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>Microprocessors and codesign labs</title>
     <link>https://quartz.jzhao.xyz/</link>
     <guid>https://quartz.jzhao.xyz/</guid>
     <description>For questions mail rutorcu@upv.es or mpeiro@upv.es This is the webpage contains the laboratory sessions of the NANO Microprocessors and Codesign itinerary ...</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
-  </item><item>
-    <title>Programming our processor</title>
-    <link>https://quartz.jzhao.xyz/Programming-our-processor</link>
-    <guid>https://quartz.jzhao.xyz/Programming-our-processor</guid>
-    <description>Preamble and setup Until now we have learned how to program in RV32I assembly RISC-V assembly programming and implemented a RV32I singlecycle processor Simple RISC-V monocycle ...</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>(Almost)Full RV32I monocycle processor</title>
     <link>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</link>
     <guid>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</guid>
     <description>In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image: All RV32I opcodes and their meaning As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor.</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>HLS for loosely coupled accelerators</title>
     <link>https://quartz.jzhao.xyz/HLS-for-loosely-coupled-accelerators</link>
     <guid>https://quartz.jzhao.xyz/HLS-for-loosely-coupled-accelerators</guid>
     <description>In this lab session we will be exploring the creation of HLS accelerators in AMD Xilinx platforms. We will make a special focus on the memory interfaces of such accelerators, and the paradigm that AMD uses to communicate with them, focusing on how we can integrate them into a SoC.</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>Handling interrupts in the Ibex system</title>
     <link>https://quartz.jzhao.xyz/Handling-interrupts-in-the-Ibex-system</link>
     <guid>https://quartz.jzhao.xyz/Handling-interrupts-in-the-Ibex-system</guid>
     <description>Requirements In this session we will work with interrupts on the Ibex system. To download the Ibex system you can go to github.com/willmontaraces/ibex-demo-system However, as we will be extending our previous lab’s work, I recommend to create a copy of your existing ibex demo system with your existing software and hardware modifications.</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>Integrating accelerators into the Selene SoC</title>
     <link>https://quartz.jzhao.xyz/Integrating-accelerators-into-the-Selene-SoC</link>
     <guid>https://quartz.jzhao.xyz/Integrating-accelerators-into-the-Selene-SoC</guid>
     <description>In this lab session we will create an HLS accelerator in C++, then we will synthetize such accelerator and integrate into a commercial SoC. Finally we will write some software to interact with such an accelerator and compare the performance of this accelerator with that of the CPU running some code that performs an analogous function.</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item><item>
     <title>Little Endian Converter (32-bit)</title>
     <link>https://quartz.jzhao.xyz/Little-Endian-Converter</link>
     <guid>https://quartz.jzhao.xyz/Little-Endian-Converter</guid>
     <description>Interactive Converter 💡 Tip: Download the example file to test the tool 📂 Upload text file: ✏️ Or paste your text here (hexadecimal bytes): 🔄 Convert to Little Endian 💾 Download ...</description>
-    <pubDate>Mon, 10 Nov 2025 10:42:20 GMT</pubDate>
+    <pubDate>Mon, 10 Nov 2025 11:12:00 GMT</pubDate>
   </item>
     </channel>
   </rss>

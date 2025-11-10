@@ -78,7 +78,7 @@ Run the program and check the values in registers <code>s0</code>,<code>s1</code
 <blockquote class="callout exclamation" data-callout="exclamation">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Upload your answers in a file named <em>exercise1.s</em> to poliformat</p></div>
+                  <div class="callout-title-inner"><p>Upload your answers in a file named <code>exercise1.s</code> to poliformat</p></div>
                   
                 </div>
 </blockquote>
@@ -105,7 +105,7 @@ Run the program and check the values in registers <code>s0</code>,<code>s1</code
 <blockquote class="callout exclamation" data-callout="exclamation">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Write your solution into a file called <em>exercise2.s</em> and attach it in poliformat</p></div>
+                  <div class="callout-title-inner"><p>Write your solution into a file called <code>exercise2.s</code> and attach it in poliformat</p></div>
                   
                 </div>
 </blockquote>
@@ -153,7 +153,7 @@ Run the program and check the values in registers <code>s0</code>,<code>s1</code
 <blockquote class="callout exclamation" data-callout="exclamation">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Write your solution into a file called <em>exercise3.s</em> and attach it in poliformat</p></div>
+                  <div class="callout-title-inner"><p>Write your solution into a file called <code>exercise3.s</code> and attach it in poliformat</p></div>
                   
                 </div>
 </blockquote>
@@ -250,7 +250,7 @@ Here is the main function that calls and tests your bubble sort code: </p>
 <blockquote class="callout exclamation" data-callout="exclamation">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Write your solution into <em>exercise4.s</em> and attach it in poliformat</p></div>
+                  <div class="callout-title-inner"><p>Write your solution into <code>exercise4.s</code> and attach it in poliformat</p></div>
                   
                 </div>
 </blockquote>
@@ -350,14 +350,15 @@ Here is the main function that calls and tests your bubble sort code: </p>
 <p>Once you have all three files navigate with your console into the target directory and compile your program using the following command:</p>
 <figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="console" data-theme="github-light github-dark"><code data-language="console" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">riscv64-unknown-elf-gcc.exe -march=rv32i -mabi=ilp32 -nostdlib .\crt0local.s .\bubsort.s .\main.cpp -lgcc -o bubsort.elf</span></span></code></pre></figure>
 <p>This will produce the <code>bubsort.elf</code> binary in your directory. To disassemble this RISC-V binary and see the compiled contents execute the following command:</p>
-<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="console" data-theme="github-light github-dark"><code data-language="console" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;">riscv64-unknown-elf-objdump.exe -S bubsort.elf > my_compiled_code.s</span></span></code></pre></figure>
+<pre><code>riscv64-unknown-elf-objdump.exe -S bubsort.elf > my_compiled_code.s
+</code></pre>
 <p>Execute the <code>bubsort.elf</code> binary in the simulator by clicking
 <code>File->New simulation->Elf executable (your file) -> Load machine</code>
 and verify that everything works correctly.</p>
-<blockquote class="callout exclamation" data-callout="exclamation">
+<blockquote class="callout exercise" data-callout="exercise">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Zip your <code>main.cpp, bubsort.s, crt0local.s and bubsort.elf</code> into a zip file called <code>exercise5.zip</code> and upload it to poliformat</p></div>
+                  <div class="callout-title-inner"><p>Zip your <code>main.cpp</code>, <code>bubsort.s</code>, <code>crt0local.s</code> and <code>bubsort.elf</code> into a zip file called <code>exercise5.zip</code> and upload it to poliformat</p></div>
                   
                 </div>
 </blockquote>
