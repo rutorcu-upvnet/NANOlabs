@@ -1,3 +1,22 @@
 @use "./base.scss";
 
 // put your custom CSS here!
+
+// Center all images globally (content and inline images). This will
+// make images appear centered in article/content areas while preserving
+// the existing max-width and rounded corners from base styles.
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// Center all Markdown/HTML tables inside article/content areas.
+// This centers the table element itself (useful for narrow tables)
+// while preserving table layout and cell alignment.
+article table,
+.content table,
+.page table {
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -1,8 +1,11 @@
 ---
-title: (Almost)Full RV32I monocycle processor
+title: 3. (Almost)Full RV32I monocycle processor
 draft: false
 tags:
 ---
+
+prev > [[Simple RISC-V monocycle processor]]
+
 In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image:
 ![[Monocycle_PH_final_plain.png]]
 
@@ -111,14 +114,14 @@ Create a table that given the `ALUOp`, `Funct3` and `Funct7` inputs generates th
 | <input type="text" maxlength="2" style="width: 60px;" /> | <input type="text" maxlength="3" style="width: 40px;" /> | <input type="text" maxlength="7" style="width: 100px;" /> | <input type="text" style="width: 200px;" /> | <input type="text" maxlength="4"  style="width: 100px;" /> |
 | <input type="text" maxlength="2" style="width: 60px;" /> | <input type="text" maxlength="3" style="width: 40px;" /> | <input type="text" maxlength="7" style="width: 100px;" /> | <input type="text" style="width: 200px;" /> | <input type="text" maxlength="4"  style="width: 100px;" /> |
 
-Upload a capture of this table called Exercise2.png into the poliformat task. Optionally upload your google_docs/excel table into the task with the name Exercise2.[extension]
+Upload a capture of this table called `Exercise2.png` into the poliformat task. Optionally upload your google_docs/excel table into the task with the name Exercise2.[extension]
 
 ## Exercise 3. Control
-Using the exercise 1 table inputs and outputs, open the provided `Control.sv` module and fill the gaps.
+Using the exercise 1 table inputs and outputs, open the provided `control.sv` module and fill the gaps.
 ## Exercise 4. ALUControl
 Using the exercise 2 table inputs and outputs, open the provided `alu_control.sv` module and fill the gaps.
 ## Exercise 5. ALU
-Open the new project ALU `ph_alu.sv` and provide support for the new operations using the Exercise2 ALU op table. 
+Open the new project ALU `ph_alu.sv` and provide support for the new operations using the [Exercise 2](Full RV32I monocycle processor#Exercise 2. Generate the ALUControl output signals) ALU op table. 
 
 Note that previous ALU input definition was `input [w-1:0] a,b;` while this ALU input definition is `input signed [w-1:0] a,b;` If a and b are not declared signed the shift right arithmetic operator will not function properly.
 ## Exercise 6. Immediate generation
@@ -131,6 +134,8 @@ The Vivado project provided has a default testbench that compares your processor
 Analise the assembly code of `[project]\riscv_txt\Cafe_and_switch.txt`. As you can see this code is reading and writing to address `0xDEAD0000`. This address is memory mapped to the 7 segment display *when writing* and to the 16 board switches *when reading*. Replace the `from` and `fram` parameters from `tiny_riscv.sv` for your corresponding `Cafe_and_switch.txt` and `ram_7seg_bytes.txt`, generate a new bitstream, and flash it into the FPGA. Is the Cafe_and_switch.txt assembler code doing what you expected?
 
 ## Optional. Exercise 8. Modifying Cafe_and_switch.txt to process switch inputs instantaneously
-As you can see with Exercise 7, switch values take a while to update on the 7 segment displays. However, our processor is running at a lightning fast 10MHz. Modify the Cafe_and_switch assembler code to continuously update the right four 7segment displays with the FPGA switch values, but make it update the leftmost switches with memory contents once a second.
+As you can see with [[Full RV32I monocycle processor#Exercise 7]], switch values take a while to update on the 7 segment displays. However, our processor is running at a lightning fast 10MHz. Modify the Cafe_and_switch assembler code to continuously update the right four 7segment displays with the FPGA switch values, but make it update the leftmost switches with memory contents once a second.
 For compiling your program ask for help to the professor.
 **Generate a bitfile, flash it into the FPGA and realize that you programmed your own RV32I processor and wrote original functioning code running on it!!**
+
+next > [[Programming our processor]]

@@ -1,8 +1,11 @@
 ---
-title: Programming our processor
+title: 4. Programming our processor
 draft: false
 tags:
 ---
+
+prev > [[Full RV32I monocycle processor]]
+
 ## Preamble and setup
 Until now we have learned how to program in RV32I assembly [[RISC-V assembly programming]] and implemented a RV32I singlecycle processor [[Simple RISC-V monocycle processor]] So the next logical step is to write C++ programs to execute in our home-made processor.
 
@@ -10,7 +13,7 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 
 ### Exercise 1. Modifying CPU code to take varying amounts of ROM and RAM
 1. Our rom will now be organized in bytes instead of words, as such, open your rom file named ``rom.sv`` and replace its contents by the following:
-	```systemverilog
+	```verilog
 	module rom (rdaddr, rddata);
 	parameter w=32,d=1024,file="rom_R.txt";
 	localparam a=$clog2(d);
@@ -30,26 +33,26 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 	```
 
 2. Open the top_level module of our processor named `tiny_riscv.sv` and replace its parameters by the following ones:
-   ```systemverilog
+   ```verilog
    parameter w=32,d_ram=256, d_rom=512,r=32;
 	```
 	As you can see, now we are able to take different ammounts of ROM and RAM in our processor, now we just need to propagate such signals through the design to the ROM and RAM instances.
 	Now modify the `riscv_gpio` instance with the new parameters
-	```systemverilog
+	```verilog
 	riscv_gpio #(.from(from), .fram(fram),.w(w),.d_ram(d_ram), .d_rom(d_rom),.r(r)) riscv_gpio
 	```
 
 3. Open the `riscv_gpio.sv` file and add the new parameters
-	````systemverilog
+	````verilog
 	   parameter w=32,d_ram=128, d_rom=128,r=32;
 	   localparam a=$clog2(d_ram);
 	````
 	Then, change the RISCV core instance with the ROM amount
-	```systemverilog
+	```verilog
 	riscv_core #(.w(w),.d(d_rom),.r(r), .from(from), .fram(fram)) riscv_core
 	```
 	And finally the RAM instance with the RAM amount
-	```systemverilog
+	```verilog
 	ram #(.w(w),.d(d_ram),.file(fram)) ram
 	```
 	

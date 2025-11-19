@@ -22,15 +22,8 @@ const defaultOptions: Options = {
   // common assembly labels map to GNU assembler highlight
   aliases: {
     asm: "gas",
-    riscv: "gas",
-    armasm: "gas",
-    gas: "gas",
-    // common terminal/console labels -> highlight as shell/bash
+    systemverilog: "verilog",
     console: "bash",
-    terminal: "bash",
-    output: "bash",
-    shell: "bash",
-    prompt: "bash",
   },
 }
 

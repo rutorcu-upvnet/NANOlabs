@@ -164,6 +164,121 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
       document.dispatchEvent(event)
     `)
   }
+
+  // Global behavior: open external links in a new tab by default.
+  // This script will be bundled into postscript.js (after DOM ready) so it applies site-wide.
+  componentResources.afterDOMLoaded.push(`
+    (function() {
+      function isExternalLink(anchor) {
+        const href = anchor.getAttribute('href');
+        if (!href) return false;
+        // ignore anchors, mailto and tel links
+        if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return false;
+        try {
+          const url = new URL(href, location.href);
+          return url.hostname !== location.hostname;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function setTargets(root) {
+        const scope = root || document;
+        const anchors = scope.querySelectorAll('article a, .content a, .page a');
+        anchors.forEach(a => {
+          try {
+            if (!isExternalLink(a)) return;
+            if (!a.getAttribute('target')) a.setAttribute('target', '_blank');
+            const rel = (a.getAttribute('rel') || '').split(/\\s+/).filter(Boolean);
+            if (!rel.includes('noopener')) rel.push('noopener');
+            if (!rel.includes('noreferrer')) rel.push('noreferrer');
+            a.setAttribute('rel', rel.join(' '));
+          } catch (e) {}
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTargets(document));
+      } else {
+        setTargets(document);
+      }
+
+      const container = document.getElementById('quartz-body') || document.body;
+      const observer = new MutationObserver(() => setTargets(document));
+      observer.observe(container, { childList: true, subtree: true });
+    })();
+  `)
+
+  // Global behavior: swap images according to current theme (light/dark).
+  // Images that should change must include class `theme-image` and the
+  // attributes `data-src-light` and/or `data-src-dark` with appropriate URLs.
+  componentResources.afterDOMLoaded.push(`
+    (function() {
+  // Ensure images have data-src-light / data-src-dark set. If not provided,
+  // assume dark variant exists by adding the '_inv' suffix before the extension.
+      async function ensureImageVariants(img) {
+        try {
+          const hasLight = !!img.getAttribute('data-src-light');
+          const hasDark = !!img.getAttribute('data-src-dark');
+          const src = img.getAttribute('src') || img.src;
+          if (!hasLight && src) img.setAttribute('data-src-light', src);
+
+          if (!hasDark && src) {
+            const m = src.match(/^(.*?)(\.[^./?#]+)(?:[?#].*)?$/);
+            if (m) {
+              const base = m[1];
+              const ext = m[2];
+              const darkCandidate = base + '_inv' + ext;
+              // create absolute URL relative to current location
+              const url = new URL(darkCandidate, location.href).href;
+              img.setAttribute('data-src-dark', url);
+            }
+          }
+        } catch (e) {}
+      }
+
+      async function updateThemeImages(theme) {
+        const imgs = Array.from(document.querySelectorAll('article img, .content img, .page img'));
+        // Ensure variants for all images first (runs probes where needed)
+        await Promise.all(imgs.map(i => ensureImageVariants(i)));
+
+        imgs.forEach(img => {
+          try {
+            const light = img.getAttribute('data-src-light');
+            const dark = img.getAttribute('data-src-dark');
+            const desired = theme === 'dark' ? (dark || light) : (light || dark);
+            if (desired && img.src !== desired) img.src = desired;
+          } catch (e) {}
+        });
+      }
+
+      // Determine initial theme: prefer saved-theme attribute (set by prescript),
+      // otherwise use prefers-color-scheme media query.
+      function currentTheme() {
+        const saved = document.documentElement.getAttribute('saved-theme');
+        if (saved === 'dark' || saved === 'light') return saved;
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      // Apply immediately and on theme changes
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => updateThemeImages(currentTheme()));
+      } else {
+        updateThemeImages(currentTheme());
+      }
+
+      // Listen for themechange events emitted by prescript.js when the user toggles theme
+      document.addEventListener('themechange', (e) => {
+        const theme = e?.detail?.theme || currentTheme();
+        updateThemeImages(theme);
+      });
+
+      // Also observe DOM mutations to catch images injected by SPA navigation
+      const container = document.getElementById('quartz-body') || document.body;
+      const mo = new MutationObserver(() => updateThemeImages(currentTheme()));
+      mo.observe(container, { childList: true, subtree: true });
+    })();
+  `)
 }
 
 // This emitter should not update the `resources` parameter. If it does, partial
@@ -249,7 +364,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           ext: ".css",
           content: transform({
             filename: "index.css",
-            code: Buffer.from(stylesheet),
+            code: Buffer.from(stylesheet) as unknown as Uint8Array,
             minify: true,
             targets: {
               safari: (15 << 16) | (6 << 8), // 15.6

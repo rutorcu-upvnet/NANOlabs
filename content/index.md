@@ -10,9 +10,8 @@ This is the webpage contains the laboratory sessions of the [NANO](https://nano.
 - [[Simple RISC-V monocycle processor]]
 - [[Full RV32I monocycle processor]]
 - [[Programming our processor]]
-- [[Little Endian Converter]]
 
-**HW/SW codesign**
-- [[Handling interrupts in the Ibex system]]
-- [[HLS for loosely coupled accelerators]]
-- [[Integrating accelerators into the Selene SoC]]
+**Other contents**
+- [[The QTRVSIM simulator]]
+- [[Simple RISC-V architecture]]
+- [[Little Endian Converter]]
