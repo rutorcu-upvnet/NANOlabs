@@ -1,13 +1,16 @@
 ---
-title: 3. (Almost)Full RV32I monocycle processor
+title: 3. Full RV32I monocycle processor
 draft: false
 tags:
 ---
 
-prev > [[Simple RISC-V monocycle processor]]
+prev > [[Simple RV32I monocycle processor]]
 
-In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image:
-![[Monocycle_PH_final_plain.png]]
+
+In this practice session we will implement the simple processor which we have seen in the corresponding theory session. Such processor is derived from the descriptions on the Patterson and Hennesy "Computer Organization and Design, RISC-V edition" Chapter 4.
+Such processor provides support for the complete RV32I instruction set.
+
+See [[Full RV32I architecture]] for the RISC‑V architecture overview.
 
 ## All RV32I opcodes and their meaning
 As you might remember, we extensively used a RV32I opcode list in our theory sessions for codifying control signals and understanding the datapath of the processor. Below a list of the opcodes that the processor that we implement in this practice supports:
@@ -15,14 +18,14 @@ As you might remember, we extensively used a RV32I opcode list in our theory ses
 
 | Opcode  | Action | Format    | Notes                                           |
 | ------- | ------ | --------- | ----------------------------------------------- |
-| 0110011 |        | R-format  | *Funct3 and Funct7 codify action*               |
+| 0110011 | Arith  | R-format  | *Funct3 and Funct7 codify action*               |
 | 0000011 | Load   | I-format  | *Funct3 codifies type of load*                  |
 | 0010011 | Arith  | I-format  | *Arithmetic operations with immediates*         |
 | 1100111 | JALR   | I-format  | *PCabsolute, but immediates codify jump offset* |
-| 0100011 |        | S-format  | *Funct3 codifies the length*                    |
-| 1100011 |        | SB-format | *Relative branches*                             |
-| 0110111 | LUI    | U-format  |                                                 |
-| 0010111 | AUIPC  | U-format  |                                                 |
+| 0100011 | Store  | S-format  | *Funct3 codifies the length*                    |
+| 1100011 | Branch | SB-format | *Relative branches*                             |
+| 0110111 | LUI    | U-format  | *Loads 20-bit upper immediate*                  |
+| 0010111 | AUIPC  | U-format  | *Stores PC+immediate to register*               |
 | 1101111 | JAL    | UJ-format | *20-bit immediate for offset*                   |
 
 

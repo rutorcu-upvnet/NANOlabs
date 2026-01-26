@@ -7,11 +7,12 @@ This is the webpage contains the laboratory sessions of the [NANO](https://nano.
 
 **RISC-V introduction**
 - [[RISC-V assembly programming]]
-- [[Simple RISC-V monocycle processor]]
+- [[Simple RV32I monocycle processor]]
 - [[Full RV32I monocycle processor]]
 - [[Programming our processor]]
 
 **Other contents**
 - [[The QTRVSIM simulator]]
-- [[Simple RISC-V architecture]]
+- [[Simple RV32I architecture]]
+- [[Full RV32I architecture]]
 - [[Little Endian Converter]]

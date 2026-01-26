@@ -376,4 +376,4 @@ and verify that everything works correctly.
 
 > [!warning] Zip your `main.cpp`, `bubsort.s`, `crt0local.s` and `bubsort.elf` into a zip file called `exercise5.zip` and upload it to poliformat
 
-next > [[Simple RISC-V monocycle processor]]
+next > [[Simple RV32I monocycle processor]]

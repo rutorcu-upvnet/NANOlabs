@@ -1,5 +1,5 @@
 ---
-title: Simple RISC-V architecture
+title: Simple RV32I architecture
 draft: false
 tags:
 ---
@@ -9,7 +9,9 @@ The tentative pipeline of the presented processor is shown in the below image, t
 ![[riscv_basico.png]] 
 
 # Functional units
-In this practice session we will work with a system verilog representation of the processor pictured above. The baseline code for this processor can be downloaded in poliformat.
+
+The functional units are 
+
 ## Instruction memory
 
 Takes in a read address corresponding to the PC and returns an instruction. It is also referenced as the processor ROM. In this processor representation, instruction memory is read asynchronously with the PC address. Memory is word/aligned as this simple processor does not support compressed instructions
@@ -35,18 +37,12 @@ Outputs:
 
 ## ALU
 
-The ALU (Arithmetic and Logic Unit) is a functional unit dedicated to performing mathematical operations. It supports several mathematical operations in a full RISC-V processor. In this specific implementation it supports the following mathematical operations between it's two input operands: `AND`, `OR`,`ADD`,`SUBSTRACT`
+The ALU (Arithmetic and Logic Unit) is a functional unit dedicated to performing mathematical operations. It supports several mathematical operations in a full RV32I processor. In this specific implementation it supports the following mathematical operations between it's two input operands: `AND`, `OR`,`ADD`,`SUBSTRACT`
 
 Inputs:
 - Source 1: First data source
 - Source 2: Second data source
 - Op: Codifies the operation that the ALU should perform between Source 1 and 2 operands
-
-Outputs:
-- ALU result: Result of the operation of the ALU
-- Zero: Set to one if ALU result is zero
-
-The Op field determines the operation that the ALU should perform with the following codification:
 
 | Op       | ALU operation |
 | -------- | ------------- |
@@ -54,6 +50,10 @@ The Op field determines the operation that the ALU should perform with the follo
 | 0001     | OR            |
 | 0010     | ADD           |
 | 0110     | SUBTRACT      |
+
+Outputs:
+- ALU result: Result of the operation of the ALU
+- Zero: Set to one if ALU result is zero
 
 ## Data memory
 
@@ -85,11 +85,22 @@ Outputs:
 
 ## ALU control unit
 
-We can generate the 4-bit ALU control input using a small control unit that has as inputs the funct7 and funct3 fields of the instruction and a 2-bit control field, which we call ALUOp. ALUOp indicates whether the operation to be performed should be add (00) for loads and stores, subtract and test if zero (01) for beq, or be determined by the operation encoded in the funct7 and funct3 fields (10).  This behavior is encoded in the following table:
+Generates the 4-bit ALU control input using the instruction and a 2-bit control field.
+Inputs
+- Instruction: the 32-bit instruction read from memory to determine the ALU operation from funct3 and funct7 fields
+- ALUOp: control field to determine the instruction type and the corresponding ALU operation
 
-| ALUOp | Operation                       |
-| ----- | ------------------------------- |
-| 00    | ADD                             |
-| 01    | SUBTRACT                        |
-| 10    | Determined by funct3 and funct7 |
+| ALUOp | funct7 | funct3 | ALU operation |
+| ----- | ------ | ------ |-------------- |
+| 00    | xxxxxx | xxx    | ADD           |
+| 01    | xxxxxx | 100    | SUB           |
+| 10    | 000000 | 000    | ADD           |
+| 10    | 010000 | 000    | SUB           |
+| 10    | 000000 | 110    | OR            |
+| 10    | 000000 | 111    | AND           |
+| 11    | xxxxxx | 000    | ADD           |
+| 11    | xxxxxx | 110    | OR            |
+| 11    | xxxxxx | 111    | AND           |
 
+Outputs:
+- Op: determines the ALU operation as seen in [[Simple RV32I architecture#ALU]]
