@@ -1,25 +1,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url>
+    <loc>https://quartz.jzhao.xyz/Full-RV32I-architecture</loc>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
+  </url><url>
     <loc>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</loc>
-    <lastmod>2025-11-19T11:39:06.868Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/Little-Endian-Converter</loc>
-    <lastmod>2025-11-19T11:39:06.868Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/Programming-our-processor</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/RISC-V-assembly-programming</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/Simple-RISC-V-architecture</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <loc>https://quartz.jzhao.xyz/Simple-RV32I-architecture</loc>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
-    <loc>https://quartz.jzhao.xyz/Simple-RISC-V-monocycle-processor</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <loc>https://quartz.jzhao.xyz/Simple-RV32I-monocycle-processor</loc>
+    <lastmod>2026-01-26T16:30:57.313Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/The-QTRVSIM-simulator</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.314Z</lastmod>
   </url><url>
     <loc>https://quartz.jzhao.xyz/</loc>
-    <lastmod>2025-11-19T11:39:06.889Z</lastmod>
+    <lastmod>2026-01-26T16:30:57.326Z</lastmod>
   </url></urlset>

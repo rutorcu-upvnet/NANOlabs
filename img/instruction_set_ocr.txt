@@ -1,0 +1,117 @@
+31 25 24 20 19 15 14 12 11 7 6 0
+
+2 000]
+2 000
+2 007
+2
+2
+2
+2
+2
+2
+
+a
+
+as
+
+om |_|
+
+oo [ed
+
+es
+es
+i
+i
+ee
+ee
+a [01007
+ee
+ee
+Ce
+ee
+as
+
+01
+00
+10
+11
+01
+01 0010011
+11
+01
+00
+01
+
+0
+a
+i
+:
+
+ee
+es
+
+1
+1
+1
+1
+1
+imm[11:0]
+imm[12|10:5]
+
+imm[12|10:5
+
+]
+imm[12|10:5]
+]
+
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+rd
+[000 | immretiiay | tr000rr ——_—|
+[ammo S*~*~*~<“‘s*é~*CSOSCtSdY Peto id
+
+ADD
+SUB
+SLL
+SLT
+SLTU
+XOR
+SRL
+SRA
+OR
+AND
+ADDI
+SLLI
+SLTI
+SLTIU
+XORI
+SRLI
+SRAI
+ORI
+ANDI
+SW
+LW
+BEQ
+BNE
+BLT
+BGE
+BLTU
+BGEU
+LUI
+AUIPC
+JAL
+JALR
