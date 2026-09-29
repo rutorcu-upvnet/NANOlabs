@@ -121,7 +121,8 @@ void writeIOdecimal(int data){
     volatile int *io_ptr = (int *)IO;
     int bcdResult = hex2dec(data);
     *io_ptr = bcdResult;
-}*/
+}
+*/
 
 int readIO() {
     volatile int *io_ptr = (int *)IO;
