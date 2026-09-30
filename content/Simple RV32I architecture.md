@@ -93,7 +93,7 @@ Inputs
 | ALUOp | funct7 | funct3 | ALU operation |
 | ----- | ------ | ------ |-------------- |
 | 00    | xxxxxx | xxx    | ADD           |
-| 01    | xxxxxx | 100    | SUB           |
+| 01    | xxxxxx | 000    | SUB           |
 | 10    | 000000 | 000    | ADD           |
 | 10    | 010000 | 000    | SUB           |
 | 10    | 000000 | 110    | OR            |
