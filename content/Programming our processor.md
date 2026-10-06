@@ -50,10 +50,13 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 3. The linker script defines the memory map, with ROM at address `0x00000000` and RAM at `0x10000000`. We need to configure the hardware memory mapping to match these specifications. Open `mymap.sv` and update the read and write address decoding as follows:
 
 ```verilog
-assign wren_mem = (daddr<d+'h10000000)? wren:0;
-
-assign rddata = daddr<(d+'h10000000)? rddata_mem:rddata_gpio;
-assign wren_gpio = (daddr>=d+'h10000000) ? wren:0;
+    assign wren_mem = (daddr<(d+'h10000000))? wren:0;
+```
+```verilog
+    assign rddata = (daddr<(d+'h10000000))? rddata_mem:rddata_gpio;
+```
+```verilog
+    assign wren_gpio = (daddr>=(d+'h10000000)) ? wren:0;
 ```
 
 ## Writing and compiling our own C++ code
