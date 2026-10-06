@@ -47,6 +47,15 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 
   Now we can optimize our processor for the code being executed. The more ROM and RAM we instantiate, the more FPGA resources we consume and the longer our synthesis and implementation times.
 
+3. The linker script defines the memory map, with ROM at address `0x00000000` and RAM at `0x10000000`. We need to configure the hardware memory mapping to match these specifications. Open `mymap.sv` and update the read and write address decoding as follows:
+
+```verilog
+assign wren_mem = (daddr<d+'h10000000)? wren:0;
+
+assign rddata = daddr<(d+'h10000000)? rddata_mem:rddata_gpio;
+assign wren_gpio = (daddr>=d+'h10000000) ? wren:0;
+```
+
 ## Writing and compiling our own C++ code
 To execute C++ code in our processor we need 3 files:
 1. Our processor setup file (`crt0local.S`). This file sets up RV32I registers such as the stack pointer and global pointer registers for usage in our main function.
