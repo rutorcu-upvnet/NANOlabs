@@ -10,55 +10,55 @@
     <link>https://quartz.jzhao.xyz/</link>
     <guid>https://quartz.jzhao.xyz/</guid>
     <description>For questions mail rutorcu@upv.es or mpeiro@upv.es This is the webpage contains the laboratory sessions of the NANO Microprocessors and Codesign itinerary ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>Full RV32I architecture</title>
     <link>https://quartz.jzhao.xyz/Full-RV32I-architecture</link>
     <guid>https://quartz.jzhao.xyz/Full-RV32I-architecture</guid>
     <description>prev &gt; Simple RV32I monocycle processor In this practice session we will implement the RV32I core that we have seen in the theory session. The final schematic of such core is presented in the following image: Functional units We have the same functional units with some new datapath elements to implement the whole RV32I instruction set.</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>3. Full RV32I monocycle processor</title>
     <link>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</link>
     <guid>https://quartz.jzhao.xyz/Full-RV32I-monocycle-processor</guid>
     <description>prev &gt; Simple RV32I monocycle processor In this practice session we will implement the simple processor which we have seen in the corresponding theory session ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>Little Endian Converter (32-bit)</title>
     <link>https://quartz.jzhao.xyz/Little-Endian-Converter</link>
     <guid>https://quartz.jzhao.xyz/Little-Endian-Converter</guid>
     <description>Use the tool below to convert a sequence of hexadecimal bytes into 32‑bit little‑endian words. You may upload a text file or paste hexadecimal bytes directly.</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>4. Programming our processor</title>
     <link>https://quartz.jzhao.xyz/Programming-our-processor</link>
     <guid>https://quartz.jzhao.xyz/Programming-our-processor</guid>
     <description>prev &gt; Full RV32I monocycle processor Preamble and setup Until now we have learned how to program in RV32I assembly RISC-V assembly programming and implemented a RV32I singlecycle ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>1. RISC-V assembly programming</title>
     <link>https://quartz.jzhao.xyz/RISC-V-assembly-programming</link>
     <guid>https://quartz.jzhao.xyz/RISC-V-assembly-programming</guid>
     <description>prev &gt; home In this session you should be provided with a RISC-V programming reference card. In this reference card you will find the following useful information: RV32I instructions C compiler data sizes All RISC-V pseudoinstructions and their assembly translation The stack layout of method calling convention The RISC-V CSR registers (That we will not use in this practice) GNU assembler directives Some general GNU assembler directives are essential when writing code.</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>Simple RV32I architecture</title>
     <link>https://quartz.jzhao.xyz/Simple-RV32I-architecture</link>
     <guid>https://quartz.jzhao.xyz/Simple-RV32I-architecture</guid>
     <description>The tentative pipeline of the presented processor is shown in the below image, take your time to understand the different components and their interconnections: Functional units ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>2. Simple RV32I monocycle processor</title>
     <link>https://quartz.jzhao.xyz/Simple-RV32I-monocycle-processor</link>
     <guid>https://quartz.jzhao.xyz/Simple-RV32I-monocycle-processor</guid>
     <description>prev &gt; RISC-V assembly programming In this practice session we will implement the simple processor which we have seen in the corresponding theory session ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item><item>
     <title>The QTRVSIM simulator</title>
     <link>https://quartz.jzhao.xyz/The-QTRVSIM-simulator</link>
     <guid>https://quartz.jzhao.xyz/The-QTRVSIM-simulator</guid>
     <description>The QTRVSIM simulator When you open the QTSim simulator the following window will appear: Here, you should select the No pipeline no cache preset, as the processor we studied today ...</description>
-    <pubDate>Tue, 06 Oct 2026 11:20:39 GMT</pubDate>
+    <pubDate>Tue, 06 Oct 2026 11:28:12 GMT</pubDate>
   </item>
     </channel>
   </rss>
