@@ -26,7 +26,7 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 2. Open the `riscv_gpio.sv` file and add the new parameters
 ```verilog
     parameter w=32,d_ram=128, d_rom=128,r=32;
-	  localparam a=$clog2(d_ram);
+    localparam a=$clog2(d_ram);
 ```
 
   Then, change the RISCV core instance with the ROM amount
@@ -38,7 +38,7 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 ```verilog
     ram #(.w(w),.d(d_ram),.file(fram)) ram
 ```
-	
+
   Now we can optimize our processor for the code being executed. The more ROM and RAM we instantiate, the more FPGA resources we consume and the longer our synthesis and implementation times.
 
 ## Writing and compiling our own C++ code
@@ -91,13 +91,13 @@ void writeIO(int data) {
 
 /*
 int hex2dec(int hex){
-   int bcdResult = 0;
-   int shift = 0;
+    int bcdResult = 0;
+    int shift = 0;
 
     while (hex > 0) {
       bcdResult |= (hex % 10) << (shift++ << 2);
       hex /= 10;
-   }
+    }
     return bcdResult;
 }
 
@@ -116,7 +116,7 @@ int readIO() {
 void wait(int cycles) {
     int maxIters = (cycles/3-2);
     for (int i = 0; i < maxIters; i++) {
-       __asm__("addi x0, x0, 0\n\t");
+      __asm__("addi x0, x0, 0\n\t");
     }
 }
 
@@ -127,12 +127,12 @@ int main() {
     wait(10000000);
     //Fibonacci succession
     while(true){
-        writeIO(a);
-        wait(10000000);
-        a = a+b;
-        writeIO(b);
-        wait(10000000);
-        b = a+b;
+      writeIO(a);
+      wait(10000000);
+      a = a+b;
+      writeIO(b);
+      wait(10000000);
+      b = a+b;
     }
 }
 ```
