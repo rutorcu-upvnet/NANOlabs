@@ -30,13 +30,14 @@ As you might remember, we extensively used a RV32I opcode list in our theory ses
 
 
 ## New Vivado project with changes
-Download the new Vivado project from Poliformat. This vivado project contains the modified processor structure, with the new `Data memory` module and all the RISCV-core glue logic implemented. Take a look at BranchVal generation inside `riscv_core.sv`. In this file you should also notice the inclusion of the new multiplexors.
+Download the new Vivado project from Poliformat. This project includes the modified processor structure and the new control signals, but it does not implement all the multiplexors required for the processor to work in `riscv_core.sv`.
 
 However, this Vivado project has some modules that are left to implement by the student:
 1. Imm gen. This immediate generation module should have been fully implemented in the previous practice, copy your previous code into the new module and ensure all types of immediate instructions are properly decoded.
 2. ALUcontrol. As in the previous practice, the implementation of ALUcontrol is left to the student.
 3. Control. As in the previous practice, the implementation of Control is left to the student.
 4. ALU. As in the previous practice, the implementation of the ALU module is left to the student.
+5. BVgen. This module generates the `BranchVal` control by inverting the `Zero` signal depending on the Branch instrution type.
 
 ## Designing a new Control module
 In the previous practice, we developed a control module capable of supporting some (but not all) RV32I instructions. In this lab session we will support the totality of unprivileged instructions (Excluding System, Synch and Counter access instructions)
