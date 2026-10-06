@@ -34,9 +34,15 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
     riscv_core #(.w(w),.d(d_rom),.r(r), .from(from), .fram(fram)) riscv_core
 ```
 
-  And finally the RAM instance with the RAM amount
+  And finally the RAM instance, the memory mapper and the GPIO controller with the new RAM size
 ```verilog
     ram #(.w(w),.d(d_ram),.file(fram)) ram
+```
+```verilog
+    mymap #(.w(w),.d(d_ram)) mymap
+```
+```verilog
+    gpio #(.w(w),.d(d_ram)) gpio
 ```
 
   Now we can optimize our processor for the code being executed. The more ROM and RAM we instantiate, the more FPGA resources we consume and the longer our synthesis and implementation times.
