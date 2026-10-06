@@ -13,30 +13,33 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 
 ### Exercise 1. Modifying CPU code to take varying amounts of ROM and RAM
 1. Open the top_level module of our processor named `tiny_riscv.sv` and replace its parameters by the following ones:
-  ```verilog
-   parameter w=32,d_ram=256,d_rom=512,r=32;
-	```
+```verilog
+    parameter w=32,d_ram=256,d_rom=512,r=32;
+```
+
 	As you can see, we can increase the memory capacities to support larger programs and configure the RAM and ROM to have different sizes. We now need to pass these parameters through the design to their respective instances.
 	Update the `riscv_gpio` instance to pass the new parameters:
-	```verilog
-	riscv_gpio #(.from(from), .fram(fram),.w(w),.d_ram(d_ram), .d_rom(d_rom),.r(r)) riscv_gpio
-	```
+```verilog
+    riscv_gpio #(.from(from), .fram(fram),.w(w),.d_ram(d_ram), .d_rom(d_rom),.r(r)) riscv_gpio
+```
 
 2. Open the `riscv_gpio.sv` file and add the new parameters
-	```verilog
-	   parameter w=32,d_ram=128, d_rom=128,r=32;
-	   localparam a=$clog2(d_ram);
-	```
+```verilog
+    parameter w=32,d_ram=128, d_rom=128,r=32;
+	  localparam a=$clog2(d_ram);
+```
+
 	Then, change the RISCV core instance with the ROM amount
-	```verilog
-	riscv_core #(.w(w),.d(d_rom),.r(r), .from(from), .fram(fram)) riscv_core
-	```
-	And finally the RAM instance with the RAM amount
-	```verilog
-	ram #(.w(w),.d(d_ram),.file(fram)) ram
-	```
+```verilog
+    riscv_core #(.w(w),.d(d_rom),.r(r), .from(from), .fram(fram)) riscv_core
+```
+
+  And finally the RAM instance with the RAM amount
+```verilog
+    ram #(.w(w),.d(d_ram),.file(fram)) ram
+```
 	
-	Now we can optimize our processor for the code being executed. The more ROM and RAM we instantiate, the more FPGA resources we consume and the longer our synthesis and implementation times.
+  Now we can optimize our processor for the code being executed. The more ROM and RAM we instantiate, the more FPGA resources we consume and the longer our synthesis and implementation times.
 
 ## Writing and compiling our own C++ code
 To execute C++ code in our processor we need 3 files:
