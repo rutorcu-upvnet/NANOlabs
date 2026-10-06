@@ -233,4 +233,6 @@ Uncomment the commented methods. They are used to print the input value as decim
 For your code to fit into the FPGA you will need to extend the rom size both in the C++ compiler and in the Vivado project. **Assume a maximum ROM size is 1024 Bytes**, if you need more ROM size, change the optimization level of the compiler from `-O3` (Optimize for speed) to `-Os` (Optimize for code size). Compile your program, generate your new bitfile and test it on the FPGA.
 It should now print the Fibonacci succession in decimal (instead of hexadecimal).
 
+Write a new program modifying `main.cpp` that includes the use of `readIO()` function to read the GPIO inputs (the switches on the board). Compile it, regenerate the ROM/RAM files and the bitfile, and test it on the FPGA by changing the switches while the program is running.
+
 **Show this exercise to the professor for evaluation in class**
