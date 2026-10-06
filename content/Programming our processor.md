@@ -17,8 +17,8 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
     parameter w=32,d_ram=256,d_rom=512,r=32;
 ```
 
-	As you can see, we can increase the memory capacities to support larger programs and configure the RAM and ROM to have different sizes. We now need to pass these parameters through the design to their respective instances.
-	Update the `riscv_gpio` instance to pass the new parameters:
+  As you can see, we can increase the memory capacities to support larger programs and configure the RAM and ROM to have different sizes. We now need to pass these parameters through the design to their respective instances.
+  Update the `riscv_gpio` instance to pass the new parameters:
 ```verilog
     riscv_gpio #(.from(from), .fram(fram),.w(w),.d_ram(d_ram), .d_rom(d_rom),.r(r)) riscv_gpio
 ```
@@ -29,7 +29,7 @@ Our homemade processor is not very advanced, as such RAMs and ROMs are implement
 	  localparam a=$clog2(d_ram);
 ```
 
-	Then, change the RISCV core instance with the ROM amount
+  Then, change the RISCV core instance with the ROM amount
 ```verilog
     riscv_core #(.w(w),.d(d_rom),.r(r), .from(from), .fram(fram)) riscv_core
 ```
