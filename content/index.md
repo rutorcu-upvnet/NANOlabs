@@ -10,6 +10,7 @@ This is the webpage contains the laboratory sessions of the [NANO](https://nano.
 - [[Simple RV32I monocycle processor]]
 - [[Full RV32I monocycle processor]]
 - [[Programming our processor]]
+- [[Pipelined RV32I processor]]
 
 **Other contents**
 - [[The QTRVSIM simulator]]

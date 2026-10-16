@@ -236,3 +236,5 @@ It should now print the Fibonacci succession in decimal (instead of hexadecimal)
 Write a new program modifying `main.cpp` that includes the use of `readIO()` function to read the GPIO inputs (the switches on the board). Compile it, regenerate the ROM/RAM files and the bitfile, and test it on the FPGA by changing the switches while the program is running.
 
 **Show this exercise to the professor for evaluation in class**
+
+next > [[Pipelined RV32I processor]]
