@@ -42,8 +42,10 @@
 <div class="table-container"><table><thead><tr><th>Stage</th><th>Name</th><th>What it does</th></tr></thead><tbody><tr><td>IF</td><td>Instruction Fetch</td><td>Reads the instruction from the ROM using the PC and computes PC+4.</td></tr><tr><td>ID</td><td>Instruction Decode</td><td>Decodes the instruction, generates the control signals, reads the register file and generates the immediate.</td></tr><tr><td>EX</td><td>Execute</td><td>The ALU computes the operation, the memory address or the branch condition/target.</td></tr><tr><td>MEM</td><td>Memory access</td><td>Reads (<code>lw</code>) or writes (<code>sw</code>) the data RAM / GPIO.</td></tr><tr><td>WB</td><td>Write Back</td><td>Writes the ALU result or the loaded data into the register file.</td></tr></tbody></table></div>
 <p>Between each pair of stages there is a pipeline register (<code>IF/ID</code>, <code>ID/EX</code>, <code>EX/MEM</code>, <code>MEM/WB</code>) that stores the data and the control signals that the instruction still needs.</p>
 <pre><code> cycle:      1    2    3    4    5    6    7
- add x1,..   IF   ID   EX   MEM  WB
- sub x2,x1   .    IF   ID   EX   MEM  WB      &lt;- needs x1 in ID (cycle 3) but add writes it in WB (cycle 5)
+
+
+ add x1,..   IF   ID   EX   MEM  WB           &lt;- writes x1 in WB (cycle 5)
+ sub ..,x1   .    IF   ID   EX   MEM  WB      &lt;- needs x1 in ID (cycle 3)
  or  x3,..   .    .    IF   ID   EX   MEM  WB
 </code></pre>
 <p>As the example shows, overlapping the execution of instructions creates <strong>hazards</strong>:</p>
@@ -58,51 +60,52 @@
 </ul>
 <p>In this practice we will first observe how the hazards make a program fail, then avoid them by software (inserting <code>nop</code> instructions), and finally solve them in hardware step by step.</p>
 <h2 id="initial-project">Initial project<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#initial-project" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
-<p>Download the Vivado project provided for this practice. Its top module already contains the 5-stage pipeline (pipeline registers, control signals traveling through the stages, ALU, register file, memories…) <strong>but without any hazard handling</strong>: no forwarding, no stalls and no flushes. Open the top level module and identify:</p>
+<p>Download the Vivado project provided for this practice. Its top module <code>riscv_core.sv</code> already contains the 5-stage pipeline (pipeline registers, control signals traveling through the stages, ALU, register file, memories…) <strong>but without any hazard handling</strong>: no forwarded data, no stalls and no flushes.
+Open the top level module and identify:</p>
 <ul>
 <li>The five stages and the four pipeline registers.</li>
 <li>Where the register file is written (WB) and read (ID).</li>
 <li>In which stage the branch/jump decision is taken and how the PC is updated.</li>
 </ul>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>Which stage resolves the branch condition in this project? How many instructions have already been fetched when the decision is taken? </p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>The branch is resolved in MEM (the signal <code>branch_jalr_or_branch</code> is generated there). By then three more instructions (the ones in IF, ID and EX) have been fetched following the PC+4 path, so they must be flushed if the branch is taken.</p></div>
+                  <div class="callout-title-inner"><p>The branch is resolved in MEM (the signal <code>branch_jalr_or_branch</code> is generated there). By then three more instructions (IF, ID and EX) have been fetched following the PC+4 path, so they must be flushed if the branch is taken.</p></div>
                   
                 </div>
 </blockquote>
 </div>
 </blockquote>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>In the unmodified pipeline, how many instructions must be placed between a producer and a consumer of a register so that the consumer reads the correct value? </p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>The producer writes in WB (cycle 5) and a consumer reads in ID. As the register file does not forward internally, the consumer ID must happen after the producer WB, so 3 instructions (or <code>nop</code>s) are required between them. If the register file read ports are modified as follows (the value being written is bypassed to the read ports), only <strong>2</strong> instructions are required:</p></div>
+                  <div class="callout-title-inner"><p>The producer writes in WB (cycle 5) and a consumer reads in ID. As the register file does not forward internally, the consumer ID must happen after the producer WB, so 3 instructions (or <code>nop</code>) are required between them. If the register file <code>regs.sv</code> is modified as follows (the value being written is bypassed to the read ports), only <strong>two</strong> instructions are required:</p></div>
                   
                 </div>
 <div class="callout-content">
 <figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="verilog" data-theme="github-light github-dark"><code data-language="verilog" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">assign</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rddata1 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> ((rdaddr1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">wraddr) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (wraddr))? wrdata : regs[rdaddr1];</span></span>
 <span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">assign</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rddata2 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> ((rdaddr2</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">wraddr) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (wraddr))? wrdata : regs[rdaddr2];</span></span></code></pre></figure>
-<p>Modify these two lines in the register file to obtain the 2-instruction distance, and keep this change for the rest of the practice.</p>
+<p>Modify these two lines in the register file to obtain the 2-instruction distance.</p>
 </div>
 </blockquote>
 </div>
 </blockquote>
 <h2 id="the-fibonacci-test-program">The Fibonacci test program<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#the-fibonacci-test-program" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
-<p>The project already includes a Fibonacci program in the file <code>rom.txt</code>. It computes the Fibonacci sequence and stores every value in RAM. The expected sequence is <code>1, 1, 2, 3, 5, 8, 13, 21, 34, 55</code>.</p>
+<p>The project already includes a Fibonacci program in the file <code>rom.txt</code>. It computes the Fibonacci sequence and stores every value in RAM. The expected sequence is <code>0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610</code>.</p>
 <h3 id="exercise-1-observing-the-hazards">Exercise 1. Observing the hazards<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-1-observing-the-hazards" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
 <ol>
 <li>Make sure that the <code>from</code> parameter of the top module points to the provided <code>rom.txt</code> file and run a simulation.</li>
@@ -118,25 +121,25 @@
 </blockquote>
 <p><strong>Upload a capture of the waveform showing a wrong value to the poliformat task, called <code>Exercise1.png</code>.</strong></p>
 <h3 id="exercise-2-software-solution-inserting-nops">Exercise 2. Software solution: inserting NOPs<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-2-software-solution-inserting-nops" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
-<p>The simplest way to avoid hazards is to let the programmer (or the compiler) separate dependent instructions. A <code>nop</code> is the instruction <code>addi x0, x0, 0</code>.</p>
-<p>Use an application (for example <a href="https://venus.kvakil.me/" class="external">Venus<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>) to insert the necessary <code>nop</code> instructions so that the program gives the correct result in the unmodified processor, and generate a <code>rom_nops.txt</code> file with the machine code of your new version. Remember:</p>
+<p>The simplest way to avoid hazards is to let the programmer (or the compiler) separate dependent instructions. A <code>nop</code> is pseudo instruction for <code>addi x0, x0, 0</code> and it has no effect on the processor state.</p>
+<p>Use an application (for example <a href="https://venus.kvakil.me/" class="external">Venus<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a>) to insert the necessary <code>nop</code> instructions to eliminate hazards, and generate a <code>rom_nops.txt</code> file with the machine code of your new code version. Remember:</p>
 <ul>
 <li>Between a producer and its consumer there must be enough instructions (see the question above).</li>
-<li>After a taken branch the three following instructions (the ones in IF, ID and EX) are still executed, insert <code>nop</code> instructions after the <code>beq</code> and <code>bne</code> instructions.</li>
-<li>Whenever possible, reordering independent instructions is better than inserting <code>nop</code>s.</li>
+<li>After a taken branch the three following instructions (IF, ID and EX) are still executed, insert <code>nop</code> instructions after branch or jump instructions.</li>
+<li>Whenever possible, reordering independent instructions is better than inserting <code>nop</code>.</li>
 </ul>
-<p>Set the <code>from</code> parameter to your new file, simulate and check that the sequence <code>1, 1, 2, 3, 5, 8, 13, 21, 34, 55</code> is correct.</p>
-<blockquote class="callout question" data-callout="question">
+<p>Set the <code>from</code> parameter to your new file, simulate and check that the sequence in RAM is correct.</p>
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>How many instructions are executed per Fibonacci iteration now? How many of them are useful? What is the penalty in performance? </p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>Compare the number of instructions of the loop with the original one and count the <code>nop</code>s. All the <code>nop</code>s are wasted cycles.</p></div>
+                  <div class="callout-title-inner"><p>Compare the number of instructions of the loop with the original one and count the <code>nop</code>. All the <code>nop</code> are wasted cycles.</p></div>
                   
                 </div>
 </blockquote>
@@ -146,18 +149,20 @@
 <h3 id="exercise-3-data-forwarding">Exercise 3. Data forwarding<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#exercise-3-data-forwarding" class="internal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
 <p>Forwarding sends the result of an instruction directly from the pipeline registers to the ALU inputs, without waiting for the write back stage.</p>
 <p>The data forwarding must be implemented in the top file <code>riscv_core.sv</code>, where the pipeline registers and the ALU are located. We have to compare the source registers of the instruction in EX (<code>rs1_ex</code>, <code>rs2_ex</code>) with the destination register of the instructions in the MEM and WB stages (<code>rd_mem</code>, <code>rd_wb</code>):</p>
-<pre><code>if (RegWrite_mem &amp;&amp; rd_mem != 0 &amp;&amp; rd_mem == rs1_ex)       forwardA = value from ALU_Result_MEM
-else if (RegWrite_wb &amp;&amp; rd_wb != 0 &amp;&amp; rd_wb == rs1_ex)     forwardA = value from the mem_to_reg_wb MUX
-else                                                       forwardA = value read from the register file (ID/EX register)
-
-(same for forwardB with rs2_ex)
-</code></pre>
-<p>Modify the multiplexer in front of each ALU input so that it selects between the register file value, the WB value and the ALU result of the MEM stage.</p>
-<blockquote class="callout question" data-callout="question">
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (RegWrite_mem </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rd_mem </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">!=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> &amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rd_mem </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rs1_ex)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">   forwardA </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> value from ALU_Result_MEM</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">else</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (RegWrite_wb </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">&amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rd_wb </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">!=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;"> 0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;"> &amp;&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rd_wb </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> rs1_ex)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">   forwardA </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> value from mem_to_reg_wb MUX</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">else</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">   forwardA </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> value read from register_file</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;">// same for forwardB with rs2_ex</span></span></code></pre></figure>
+<p>Modify the multiplexer in each ALU input so that it selects between the register file value, the WB value and the ALU result of the MEM stage.</p>
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>Why is the <code>rd != 0</code> condition needed? Why does the EX/MEM forwarding have priority over MEM/WB?</p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
@@ -169,11 +174,11 @@ else                                                       forwardA = value read
 </blockquote>
 </div>
 </blockquote>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>The value of the store ( <code>sw rs2</code>) is not sent through the ALU. Does it need forwarding too? Where should the forwarded value be taken from?</p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
@@ -237,11 +242,11 @@ else                                                       forwardA = value read
 </li>
 <li>Note that <code>flush</code> and <code>stall</code> can be active at the same time. Which one must have priority?</li>
 </ol>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>How many cycles are lost every time a branch is taken? What happens when it is not taken? </p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
@@ -253,11 +258,11 @@ else                                                       forwardA = value read
 </blockquote>
 </div>
 </blockquote>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>Why does <code>flush</code> have priority over <code>stall</code>?</p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
@@ -276,17 +281,17 @@ else                                                       forwardA = value read
 <li>Count the cycles needed to complete the program and compare them with the ones of your <code>nop</code> and forwarding versions. Which version is the fastest and by how much?</li>
 <li>Optionally, modify the assembly code to write the sequence to the 7-segment display (adding a delay loop between writes to be able to see the values), generate the bitstream, flash it into the FPGA and check the result on the board.</li>
 </ol>
-<blockquote class="callout question" data-callout="question">
+<blockquote class="callout question is-collapsible is-collapsed" data-callout="question" data-callout-fold>
 <div class="callout-title">
                   <div class="callout-icon"></div>
                   <div class="callout-title-inner"><p>Where are the stalls and flushes happening in the final execution? Mark in the waveform the cycles in which <code>stall</code> and <code>flush</code> are active.</p></div>
-                  
+                  <div class="fold-callout-icon"></div>
                 </div>
 <div class="callout-content">
 <blockquote class="callout todo" data-callout="todo">
 <div class="callout-title">
                   <div class="callout-icon"></div>
-                  <div class="callout-title-inner"><p>One stall in every iteration at the <code>lw</code> <span>→</span> <code>sw</code> pair and three flushed instructions each time <code>bne</code> is taken.</p></div>
+                  <div class="callout-title-inner"><p>One stall at the initial <code>lw</code> and three flushed instructions each time <code>bxx</code> is taken.</p></div>
                   
                 </div>
 </blockquote>
@@ -295,7 +300,7 @@ else                                                       forwardA = value read
 <p><strong>Upload a capture of the waveform showing the correct result and the stall/flush signals, called <code>Exercise6.png</code>, to the poliformat task.</strong></p>
 <p><strong>Show this exercise to the professor for evaluation in class</strong></p>
 <p><strong>Congratulations!! You have implemented a pipelined RV32I processor that handles data and control hazards!!</strong></p>
-<p>prev > <a href="./Programming-our-processor" class="internal alias" data-slug="Programming-our-processor">Programming our processor</a></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div id="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false}"></div><button id="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+<p>prev > <a href="./" class="internal alias" data-slug="index">home</a></p></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>Graph View</h3><div class="graph-outer"><div id="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false}"></div><button id="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
                 s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
                 c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
                 C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
