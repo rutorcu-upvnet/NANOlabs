@@ -23,8 +23,10 @@ Between each pair of stages there is a pipeline register (`IF/ID`, `ID/EX`, `EX/
 
 ```
  cycle:      1    2    3    4    5    6    7
- add x1,..   IF   ID   EX   MEM  WB
- sub x2,x1   .    IF   ID   EX   MEM  WB      <- needs x1 in ID (cycle 3) but add writes it in WB (cycle 5)
+
+
+ add x1,..   IF   ID   EX   MEM  WB           <- writes x1 in WB (cycle 5)
+ sub ..,x1   .    IF   ID   EX   MEM  WB      <- needs x1 in ID (cycle 3)
  or  x3,..   .    .    IF   ID   EX   MEM  WB
 ```
 
@@ -37,24 +39,25 @@ As the example shows, overlapping the execution of instructions creates **hazard
 In this practice we will first observe how the hazards make a program fail, then avoid them by software (inserting `nop` instructions), and finally solve them in hardware step by step.
 
 ## Initial project
-Download the Vivado project provided for this practice. Its top module already contains the 5-stage pipeline (pipeline registers, control signals traveling through the stages, ALU, register file, memories...) **but without any hazard handling**: no forwarding, no stalls and no flushes. Open the top level module and identify:
+Download the Vivado project provided for this practice. Its top module `riscv_core.sv` already contains the 5-stage pipeline (pipeline registers, control signals traveling through the stages, ALU, register file, memories...) **but without any hazard handling**: no forwarded data, no stalls and no flushes. 
+Open the top level module and identify:
 - The five stages and the four pipeline registers.
 - Where the register file is written (WB) and read (ID).
 - In which stage the branch/jump decision is taken and how the PC is updated.
 
->[!question] Which stage resolves the branch condition in this project? How many instructions have already been fetched when the decision is taken?
-> > [!todo] The branch is resolved in MEM (the signal `branch_jalr_or_branch` is generated there). By then three more instructions (the ones in IF, ID and EX) have been fetched following the PC+4 path, so they must be flushed if the branch is taken.
+>[!question]- Which stage resolves the branch condition in this project? How many instructions have already been fetched when the decision is taken?
+>> [!todo] The branch is resolved in MEM (the signal `branch_jalr_or_branch` is generated there). By then three more instructions (IF, ID and EX) have been fetched following the PC+4 path, so they must be flushed if the branch is taken.
 
->[!question] In the unmodified pipeline, how many instructions must be placed between a producer and a consumer of a register so that the consumer reads the correct value? 
-> > [!todo] The producer writes in WB (cycle 5) and a consumer reads in ID. As the register file does not forward internally, the consumer ID must happen after the producer WB, so 3 instructions (or `nop`s) are required between them. If the register file read ports are modified as follows (the value being written is bypassed to the read ports), only **2** instructions are required:
-> > ```verilog
-> > assign rddata1 = ((rdaddr1==wraddr) && (wraddr))? wrdata : regs[rdaddr1];
-> > assign rddata2 = ((rdaddr2==wraddr) && (wraddr))? wrdata : regs[rdaddr2];
-> > ```
-> > Modify these two lines in the register file to obtain the 2-instruction distance, and keep this change for the rest of the practice.
+>[!question]- In the unmodified pipeline, how many instructions must be placed between a producer and a consumer of a register so that the consumer reads the correct value? 
+>> [!todo] The producer writes in WB (cycle 5) and a consumer reads in ID. As the register file does not forward internally, the consumer ID must happen after the producer WB, so 3 instructions (or `nop`) are required between them. If the register file `regs.sv` is modified as follows (the value being written is bypassed to the read ports), only **two** instructions are required:
+>> ```verilog
+>> assign rddata1 = ((rdaddr1==wraddr) && (wraddr))? wrdata : regs[rdaddr1];
+>> assign rddata2 = ((rdaddr2==wraddr) && (wraddr))? wrdata : regs[rdaddr2];
+>> ```
+>> Modify these two lines in the register file to obtain the 2-instruction distance.
 
 ## The Fibonacci test program
-The project already includes a Fibonacci program in the file `rom.txt`. It computes the Fibonacci sequence and stores every value in RAM. The expected sequence is `1, 1, 2, 3, 5, 8, 13, 21, 34, 55`.
+The project already includes a Fibonacci program in the file `rom.txt`. It computes the Fibonacci sequence and stores every value in RAM. The expected sequence is `0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610`.
 
 ### Exercise 1. Observing the hazards
 1. Make sure that the `from` parameter of the top module points to the provided `rom.txt` file and run a simulation.
@@ -66,17 +69,17 @@ The project already includes a Fibonacci program in the file `rom.txt`. It compu
 **Upload a capture of the waveform showing a wrong value to the poliformat task, called `Exercise1.png`.**
 
 ### Exercise 2. Software solution: inserting NOPs
-The simplest way to avoid hazards is to let the programmer (or the compiler) separate dependent instructions. A `nop` is the instruction `addi x0, x0, 0`.
+The simplest way to avoid hazards is to let the programmer (or the compiler) separate dependent instructions. A `nop` is pseudo instruction for `addi x0, x0, 0` and it has no effect on the processor state.
 
-Use an application (for example [Venus](https://venus.kvakil.me/)) to insert the necessary `nop` instructions so that the program gives the correct result in the unmodified processor, and generate a `rom_nops.txt` file with the machine code of your new version. Remember:
+Use an application (for example [Venus](https://venus.kvakil.me/)) to insert the necessary `nop` instructions to eliminate hazards, and generate a `rom_nops.txt` file with the machine code of your new code version. Remember:
 - Between a producer and its consumer there must be enough instructions (see the question above).
-- After a taken branch the three following instructions (the ones in IF, ID and EX) are still executed, insert `nop` instructions after the `beq` and `bne` instructions.
-- Whenever possible, reordering independent instructions is better than inserting `nop`s.
+- After a taken branch the three following instructions (IF, ID and EX) are still executed, insert `nop` instructions after branch or jump instructions.
+- Whenever possible, reordering independent instructions is better than inserting `nop`.
 
-Set the `from` parameter to your new file, simulate and check that the sequence `1, 1, 2, 3, 5, 8, 13, 21, 34, 55` is correct.
+Set the `from` parameter to your new file, simulate and check that the sequence in RAM is correct.
 
->[!question] How many instructions are executed per Fibonacci iteration now? How many of them are useful? What is the penalty in performance?
-> > [!todo] Compare the number of instructions of the loop with the original one and count the `nop`s. All the `nop`s are wasted cycles.
+>[!question]- How many instructions are executed per Fibonacci iteration now? How many of them are useful? What is the penalty in performance?
+>> [!todo] Compare the number of instructions of the loop with the original one and count the `nop`. All the `nop` are wasted cycles.
 
 **Show this exercise to the professor for evaluation in class**
 
@@ -85,21 +88,24 @@ Forwarding sends the result of an instruction directly from the pipeline registe
 
 The data forwarding must be implemented in the top file `riscv_core.sv`, where the pipeline registers and the ALU are located. We have to compare the source registers of the instruction in EX (`rs1_ex`, `rs2_ex`) with the destination register of the instructions in the MEM and WB stages (`rd_mem`, `rd_wb`):
 
+```c
+if (RegWrite_mem && rd_mem != 0 && rd_mem == rs1_ex)
+   forwardA = value from ALU_Result_MEM
+else if (RegWrite_wb && rd_wb != 0 && rd_wb == rs1_ex)
+   forwardA = value from mem_to_reg_wb MUX
+else
+   forwardA = value read from register_file
+
+// same for forwardB with rs2_ex
 ```
-if (RegWrite_mem && rd_mem != 0 && rd_mem == rs1_ex)       forwardA = value from ALU_Result_MEM
-else if (RegWrite_wb && rd_wb != 0 && rd_wb == rs1_ex)     forwardA = value from the mem_to_reg_wb MUX
-else                                                       forwardA = value read from the register file (ID/EX register)
 
-(same for forwardB with rs2_ex)
-```
+Modify the multiplexer in each ALU input so that it selects between the register file value, the WB value and the ALU result of the MEM stage.
 
-Modify the multiplexer in front of each ALU input so that it selects between the register file value, the WB value and the ALU result of the MEM stage.
+>[!question]- Why is the `rd != 0` condition needed? Why does the EX/MEM forwarding have priority over MEM/WB?
+>> [!todo] Register x0 is always 0 and a write to it must never be forwarded. If both stages write the same register, the instruction in MEM is the most recent one, so its value is the correct one.
 
->[!question] Why is the `rd != 0` condition needed? Why does the EX/MEM forwarding have priority over MEM/WB?
-> > [!todo] Register x0 is always 0 and a write to it must never be forwarded. If both stages write the same register, the instruction in MEM is the most recent one, so its value is the correct one.
-
->[!question] The value of the store (`sw rs2`) is not sent through the ALU. Does it need forwarding too? Where should the forwarded value be taken from?
-> > [!todo] Yes. The forwarded `rs2` value must also be used as the data to write in memory, so the forwarding multiplexer for B must be placed before the point where the store data is sent to the EX/MEM register.
+>[!question]- The value of the store (`sw rs2`) is not sent through the ALU. Does it need forwarding too? Where should the forwarded value be taken from?
+>> [!todo] Yes. The forwarded `rs2` value must also be used as the data to write in memory, so the forwarding multiplexer for B must be placed before the point where the store data is sent to the EX/MEM register.
 
 Once forwarding is implemented:
 1. Run again your `nop` version to check that nothing broke.
@@ -134,11 +140,11 @@ In our pipeline, branches and jumps are resolved in MEM. Instructions fetched af
    - Clear the control signals of the `ID/EX` and `EX/MEM` registers (convert the instructions into bubbles).
 3. Note that `flush` and `stall` can be active at the same time. Which one must have priority?
 
->[!question] How many cycles are lost every time a branch is taken? What happens when it is not taken?
-> > [!todo] Three cycles are lost on a taken branch (the three flushed instructions). When it is not taken no cycles are lost, as the pipeline implicitly predicts "not taken".
+>[!question]- How many cycles are lost every time a branch is taken? What happens when it is not taken?
+>> [!todo] Three cycles are lost on a taken branch (the three flushed instructions). When it is not taken no cycles are lost, as the pipeline implicitly predicts "not taken".
 
->[!question] Why does `flush` have priority over `stall`?
-> > [!todo] If the branch in MEM is taken, the instructions in ID and EX are going to be discarded anyway, so there is no point in stalling for them.
+>[!question]- Why does `flush` have priority over `stall`?
+>> [!todo] If the branch in MEM is taken, the instructions in ID and EX are going to be discarded anyway, so there is no point in stalling for them.
 
 ### Exercise 6. Final test
 Finally, run the **original** `rom.txt` (the one **without** any `nop`) in your complete processor with forwarding, stalls and flushes.
@@ -146,8 +152,8 @@ Finally, run the **original** `rom.txt` (the one **without** any `nop`) in your 
 2. Count the cycles needed to complete the program and compare them with the ones of your `nop` and forwarding versions. Which version is the fastest and by how much?
 3. Optionally, modify the assembly code to write the sequence to the 7-segment display (adding a delay loop between writes to be able to see the values), generate the bitstream, flash it into the FPGA and check the result on the board.
 
->[!question] Where are the stalls and flushes happening in the final execution? Mark in the waveform the cycles in which `stall` and `flush` are active.
-> > [!todo] One stall in every iteration at the `lw` -> `sw` pair and three flushed instructions each time `bne` is taken.
+>[!question]- Where are the stalls and flushes happening in the final execution? Mark in the waveform the cycles in which `stall` and `flush` are active.
+>> [!todo] One stall at the initial `lw` and three flushed instructions each time `bxx` is taken.
 
 **Upload a capture of the waveform showing the correct result and the stall/flush signals, called `Exercise6.png`, to the poliformat task.**
 
@@ -155,4 +161,4 @@ Finally, run the **original** `rom.txt` (the one **without** any `nop`) in your 
 
 **Congratulations!! You have implemented a pipelined RV32I processor that handles data and control hazards!!**
 
-prev > [[Programming our processor]]
+prev > [home](index)
